@@ -6,10 +6,11 @@ namespace MappingGenerator.Generator
 {
     class SyntaxReceiver : ISyntaxReceiver
     {
-        public List<(SyntaxNode Source, SyntaxNode DestinationInstance)> PropertyAssignments { get; } = new List<(SyntaxNode Source, SyntaxNode DestinationInstance)>();
+        public List<(SyntaxNode Source, SyntaxNode DestinationInstance, SyntaxType Type)> PropertyAssignments { get; } = new List<(SyntaxNode Source, SyntaxNode DestinationInstance, SyntaxType Type)>();
 
         public void OnVisitSyntaxNode(SyntaxNode syntaxNode)
         {
+            // Match the map method
             if (syntaxNode is InvocationExpressionSyntax
                 {
                     ArgumentList:
@@ -54,9 +55,10 @@ namespace MappingGenerator.Generator
                     })
                 {
                     //System.Diagnostics.Debugger.Launch();
-                    PropertyAssignments.Add((source, property));
+                    PropertyAssignments.Add((source, property, SyntaxType.Default));
                 }
 
+                // Match "B b = X"
                 if (syntaxNode.Parent is EqualsValueClauseSyntax
                     {
                         Parent: VariableDeclaratorSyntax
@@ -72,10 +74,24 @@ namespace MappingGenerator.Generator
                     })
                 {
                     //System.Diagnostics.Debugger.Launch();
-                    PropertyAssignments.Add((source, type));
+                    PropertyAssignments.Add((source, type, SyntaxType.Default));
 
+                }
+
+                // Match "a.SomeMethod(X)"
+                if (syntaxNode.Parent is ArgumentSyntax
+                    {
+                    } argument)
+                {
+                    PropertyAssignments.Add((source, argument, SyntaxType.MethodArgument));
                 }
             }
         }
+    }
+
+    enum SyntaxType
+    {
+        Default,
+        MethodArgument
     }
 }

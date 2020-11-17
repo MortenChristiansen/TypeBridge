@@ -1,4 +1,5 @@
 ﻿using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,18 +9,6 @@ namespace MappingGenerator.Generator
     [Generator]
     public class MappingGenerator : ISourceGenerator
     {
-        // TODO: If the two types are the same, just return the original (or do not emit a mapping method)
-        // TODO: Map all properties - Can we use a recursive Map call to map all the complex members?
-        // TODO: IEnumerables should be mapped to IEnumerabes. Can we use a recursive Map call to map all the collection elements?
-        // TODO: If no mapping is possible, then just not emit mapping. It may be difficult to figure out why a mapping is not available.
-        // TODO: We can skip the generic argument when we can resolve the type from the context (what the result is assigned to)
-        // TODO: Make sure we can use the mapping function like this "things.Select(Map.To)"
-        // TODO: Make sure we support mapping from tuples. This will be a central use case for Dapper I think
-        // TODO: Use full type names when there are name clashes.
-
-        // Should we require all fields in the destination to be mapped and allow missing fields via an object (anonymous or not)
-        // Map.To<BigThing>(smallThing, new { MissingThing = thing });
-
         public void Execute(GeneratorExecutionContext context)
         {
             if (context.SyntaxReceiver is not SyntaxReceiver syntaxReceiver)
@@ -49,11 +38,11 @@ namespace MappingGenerator.Generator
             context.RegisterForSyntaxNotifications(() => new SyntaxReceiver());
         }
 
-        private IEnumerable<MappingInfo> GetMappingInfo(Compilation compilation, List<(SyntaxNode Source, SyntaxNode DestinationInstance)> args)
+        private IEnumerable<MappingInfo> GetMappingInfo(Compilation compilation, List<(SyntaxNode Source, SyntaxNode DestinationInstance, SyntaxType Type)> args)
         {
             var foundTypes = new HashSet<(ITypeSymbol Source, ITypeSymbol Destination)>();
 
-            foreach ((var source, var destination) in args)
+            foreach ((var source, var destination, var type) in args)
             {
                 //System.Diagnostics.Debugger.Launch();
                 var semanticModel = compilation.GetSemanticModel(source.SyntaxTree);
@@ -62,13 +51,77 @@ namespace MappingGenerator.Generator
                 if (sourceType is null)
                     continue;
 
-                var destinationType = semanticModel.GetTypeInfo(destination).Type;
-                if (destinationType is null || foundTypes.Contains((sourceType, destinationType)))
-                    continue;
+                ITypeSymbol destinationType = null;
+                if (type == SyntaxType.Default)
+                {
+                    destinationType = semanticModel.GetTypeInfo(destination).Type;
+                    if (destinationType is null || foundTypes.Contains((sourceType, destinationType)))
+                        continue;
+                }
+                if (type == SyntaxType.MethodArgument && destination is ArgumentSyntax
+                    {
+                        Parent: ArgumentListSyntax
+                        {
+                            Parent: InvocationExpressionSyntax
+                            {
+                                Expression: MemberAccessExpressionSyntax
+                                {
+                                    Expression: IdentifierNameSyntax
+                                    {
+
+                                    } methodOwner,
+                                    Name: IdentifierNameSyntax
+                                    {
+                                        Identifier:
+                                        {
+                                            
+                                        } methodName
+                                    } method
+                                }
+                            },
+                            Arguments:
+                            {
+                                
+                            } arguments
+                        } argumentList
+                    } argument)
+                {
+
+                    var methodOwnerType = semanticModel.GetTypeInfo(methodOwner).Type;
+                    var methodType = semanticModel.GetTypeInfo(method).Type;
+                    var parameter = methodOwnerType.GetMembers().OfType<IMethodSymbol>().Where(m => m.Name == methodName.ValueText).Select(m => (Match: HasMatchingParameters(m, arguments, argument, out var matchingParameter), matchingParameter)).FirstOrDefault(v => v.Match).matchingParameter;
+                    if (parameter == null)
+                        continue;
+
+                    //System.Diagnostics.Debugger.Launch();
+
+                    destinationType = parameter.Type;
+                    if (destinationType is null || foundTypes.Contains((sourceType, destinationType)))
+                        continue;
+                }
 
                 foundTypes.Add((sourceType, destinationType));
                 yield return new MappingInfo { SourceType = sourceType, DestinationType = destinationType };
             }
+        }
+
+        private bool HasMatchingParameters(IMethodSymbol method, SeparatedSyntaxList<ArgumentSyntax> argumentList, ArgumentSyntax argument, out IParameterSymbol matchingParameter)
+        {
+            matchingParameter = null;
+
+            if (method.Parameters.Length != argumentList.Count)
+                return false;
+
+            //System.Diagnostics.Debugger.Launch();
+
+            for (int i = 0; i < argumentList.Count; i++)
+            {
+                if (argumentList[i] == argument)
+                    matchingParameter = method.Parameters[i];
+            }
+
+            // TODO: More robustly identify the correct method if possible
+            return true;
         }
     }
 }

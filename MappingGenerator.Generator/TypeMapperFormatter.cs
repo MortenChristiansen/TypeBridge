@@ -48,8 +48,7 @@ $@"public static implicit operator {destinationType.GetQualifiedName()}({_source
             if (destinationProperties.Count != _sourceProperties.Count)
                 return false;
 
-            // TODO: There must be a constructor that we can use to create the instance
-            // TODO: More robust implementation - maybe even detect if the type can be assigned to the destination implicitly (or via base class)
+            // TODO: More robust implementation
             return _sourceProperties.All(s => destinationProperties.Any(d => s.Name.Equals(d.Name, StringComparison.InvariantCultureIgnoreCase) && s.Type.Name == d.Type.Name));
         }
 
