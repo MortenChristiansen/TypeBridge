@@ -10,14 +10,11 @@ namespace MappingGenerator.Sample
     {
         public void Sample()
         {
-            var c = new C();
-            var a = new A();
-            c.BValue = a.Map();
-            //var b = Map.To<B>(a);
-            //var b2 = new B();
-            //var a2 = Map.To<A>(b2);
-            //var aa = Map.To<A>(a);
-
+            //var c = new C();
+            //var a = new A();
+            //c.BValue = a.Map();
+            var b = new B();
+            A a2 = b.Map();
         }
     }
 

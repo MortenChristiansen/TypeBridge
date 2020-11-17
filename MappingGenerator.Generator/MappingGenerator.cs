@@ -1,5 +1,4 @@
 ﻿using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -69,68 +68,6 @@ namespace MappingGenerator.Generator
 
                 foundTypes.Add((sourceType, destinationType));
                 yield return new MappingInfo { SourceType = sourceType, DestinationType = destinationType };
-            }
-        }
-    }
-
-    public class MappingInfo
-    {
-        public ITypeSymbol SourceType { get; set; }
-        public ITypeSymbol DestinationType { get; set; }
-
-        public static readonly MappingInfo DefaultMapping = new MappingInfo { SourceType = null, DestinationType = null };
-    }
-
-    public class SyntaxReceiver : ISyntaxReceiver
-    {
-        public List<(SyntaxNode Source, SyntaxNode DestinationInstance)> PropertyAssignments { get; } = new List<(SyntaxNode Source, SyntaxNode DestinationInstance)>();
-
-        public void OnVisitSyntaxNode(SyntaxNode syntaxNode)
-        {
-            if (syntaxNode is InvocationExpressionSyntax
-            {
-                ArgumentList:
-                {
-                    Arguments:
-                    {
-                        Count: 0
-                    }
-                }
-                ,
-                Expression: MemberAccessExpressionSyntax
-                {
-                    Name:
-                    {
-                        Identifier:
-                        {
-                            ValueText: "Map"
-                        }
-                    },
-                    Expression: IdentifierNameSyntax
-                    {
-
-                    } source
-                }
-            })
-            {
-                // Match "a.B = X"
-                if (syntaxNode.Parent is AssignmentExpressionSyntax
-                {
-                    Left: MemberAccessExpressionSyntax
-                    {
-                        Expression: IdentifierNameSyntax
-                        {
-                        },
-                        Name: IdentifierNameSyntax
-                        {
-
-                        } property // The property "B"
-                    }
-                })
-                {
-                    //System.Diagnostics.Debugger.Launch();
-                    PropertyAssignments.Add((source, property));
-                }
             }
         }
     }
