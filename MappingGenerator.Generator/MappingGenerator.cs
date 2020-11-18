@@ -58,6 +58,8 @@ namespace MappingGenerator.Generator
                     if (destinationType is null || foundTypes.Contains((sourceType, destinationType)))
                         continue;
                 }
+
+                // Normal method
                 if (type == SyntaxType.MethodArgument && destination is ArgumentSyntax
                     {
                         Parent: ArgumentListSyntax
@@ -76,24 +78,61 @@ namespace MappingGenerator.Generator
                                         {
                                             
                                         } methodName
-                                    } method
+                                    }
                                 }
                             },
                             Arguments:
                             {
-                                
+                              
                             } arguments
-                        } argumentList
+                        }
                     } argument)
                 {
-
-                    var methodOwnerType = semanticModel.GetTypeInfo(methodOwner).Type;
-                    var methodType = semanticModel.GetTypeInfo(method).Type;
-                    var parameter = methodOwnerType.GetMembers().OfType<IMethodSymbol>().Where(m => m.Name == methodName.ValueText).Select(m => (Match: HasMatchingParameters(m, arguments, argument, out var matchingParameter), matchingParameter)).FirstOrDefault(v => v.Match).matchingParameter;
+                    var parameter = GetParameter(semanticModel, methodOwner, methodName, arguments, null, argument);
                     if (parameter == null)
                         continue;
 
-                    //System.Diagnostics.Debugger.Launch();
+                    destinationType = parameter.Type;
+                    if (destinationType is null || foundTypes.Contains((sourceType, destinationType)))
+                        continue;
+                }
+
+                // Generic method
+                if (type == SyntaxType.MethodArgument && destination is ArgumentSyntax
+                    {
+                        Parent: ArgumentListSyntax
+                        {
+                            Parent: InvocationExpressionSyntax
+                            {
+                                Expression: MemberAccessExpressionSyntax
+                                {
+                                    Expression: IdentifierNameSyntax
+                                    {
+
+                                    } genericMethodOwner,
+                                    Name: GenericNameSyntax
+                                    {
+                                        Identifier: SyntaxToken
+                                        {
+
+                                        } genericMethodName,
+                                        TypeArgumentList: TypeArgumentListSyntax
+                                        {
+
+                                        } typeArguments
+                                    }
+                                }
+                            },
+                            Arguments:
+                            {
+
+                            } genericArguments
+                        }
+                    } genericArgument)
+                {
+                    var parameter = GetParameter(semanticModel, genericMethodOwner, genericMethodName, genericArguments, typeArguments, genericArgument);
+                    if (parameter == null)
+                        continue;
 
                     destinationType = parameter.Type;
                     if (destinationType is null || foundTypes.Contains((sourceType, destinationType)))
@@ -105,11 +144,26 @@ namespace MappingGenerator.Generator
             }
         }
 
-        private bool HasMatchingParameters(IMethodSymbol method, SeparatedSyntaxList<ArgumentSyntax> argumentList, ArgumentSyntax argument, out IParameterSymbol matchingParameter)
+        private IParameterSymbol GetParameter(SemanticModel semanticModel, IdentifierNameSyntax methodOwner, SyntaxToken methodName, SeparatedSyntaxList<ArgumentSyntax> arguments, TypeArgumentListSyntax genericArguments, ArgumentSyntax argument) =>
+            semanticModel
+                .GetTypeInfo(methodOwner)
+                .Type?
+                .GetMembers()
+                .OfType<IMethodSymbol>()
+                .Where(m => m.Name == methodName.ValueText)
+                .Select(m => (Match: HasMatchingParameters(m, arguments, argument, genericArguments, out var matchingParameter), matchingParameter))
+                .FirstOrDefault(v => v.Match)
+                .matchingParameter;
+
+        // For normal methods
+        private bool HasMatchingParameters(IMethodSymbol method, SeparatedSyntaxList<ArgumentSyntax> argumentList, ArgumentSyntax argument, TypeArgumentListSyntax typeArguments, out IParameterSymbol matchingParameter)
         {
             matchingParameter = null;
 
             if (method.Parameters.Length != argumentList.Count)
+                return false;
+
+            if (typeArguments != null && typeArguments.Arguments.Count != method.TypeArguments.Length)
                 return false;
 
             //System.Diagnostics.Debugger.Launch();

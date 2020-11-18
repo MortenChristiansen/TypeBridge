@@ -16,7 +16,8 @@ namespace MappingGenerator.Sample
             var b1 = new B();
             //A a2 = b.Map();
             var b2 = new B();
-            b1.DoStuff(b2.Map());
+            b1.DoStuff<Task>(b2.Map());
+            b1.DoThing(b2.Map());
         }
     }
 
@@ -31,7 +32,12 @@ namespace MappingGenerator.Sample
         public int Age { get; set; }
         public string Name { get; set; }
 
-        public void DoStuff(A a)
+        public void DoThing(A a)
+        {
+
+        }
+
+        public void DoStuff<T>(A a)
         {
 
         }
@@ -47,7 +53,6 @@ namespace MappingGenerator.Sample
      - Do not generate map method if a valid method with the same name already exists
      - If the two types are the same, just return the original (or do not emit a mapping method)
      - Recursively map complex types (including collections)
-     - Support arguments to generic methods.
      - Support property initializer.
      - Support mapping from tuples.
      - Test if there is a valid constructor we can use in the destination class.
