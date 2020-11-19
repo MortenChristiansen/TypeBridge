@@ -58,5 +58,6 @@ namespace MappingGenerator.Sample
      - Test if there is a valid constructor we can use in the destination class.
      - Handle mapping properties that can be implicitly converted or otherwise assigned to the receiving property.
      - The mapper class should not have all the fields but just have the source object instead. This saves copying all the properties.
+     - Handle case where we have not included namespace of the type being mapped. This can happen if the type is only indirectly referenced, fx through 'var'.
      */
 }

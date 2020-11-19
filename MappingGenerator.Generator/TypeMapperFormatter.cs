@@ -26,7 +26,7 @@ namespace MappingGenerator.Generator
         }
 
         public string Format() =>
-$@"class {_sourceType.Name}_Mapper
+$@"sealed class {_sourceType.Name}_Mapper
     {{
         {string.Join($"{Environment.NewLine}        ", _sourceType.GetMembers().OfType<IPropertySymbol>().Select(p => $"public {p.Type} {p.Name} {{ get; }}"))}
 
