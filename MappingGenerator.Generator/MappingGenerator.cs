@@ -25,10 +25,13 @@ namespace MappingGenerator.Generator
                 foreach (var mappingInfo in m)
                     formatter.AddDestinationType(mappingInfo.DestinationType);
 
-                var mapper = formatter.Format();
-                var extensions = MapExtensionFormatter.Format(m.Key);
-                var combined = NamespaceFormatter.Format(m.Key.GetNamespace(), mapper) + Environment.NewLine + Environment.NewLine + extensions;
-                context.AddSource($"{m.Key.Name}_Mapper.cs", combined);
+                if (formatter.HasMappings)
+                {
+                    var mapper = formatter.Format();
+                    var extensions = MapExtensionFormatter.Format(m.Key);
+                    var combined = NamespaceFormatter.Format(m.Key.GetNamespace(), mapper) + Environment.NewLine + Environment.NewLine + extensions;
+                    context.AddSource($"{m.Key.Name}_Mapper.cs", combined);
+                }
                 //System.Diagnostics.Debugger.Launch();
             }
         }

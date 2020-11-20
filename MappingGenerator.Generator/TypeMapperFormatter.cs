@@ -11,6 +11,8 @@ namespace MappingGenerator.Generator
         private readonly List<IPropertySymbol> _sourceProperties;
         private readonly List<ITypeSymbol> _destinationTypes = new List<ITypeSymbol>();
 
+        public bool HasMappings => _destinationTypes.Count > 0;
+
         public TypeMapperFormatter(ITypeSymbol sourceType)
         {
             _sourceType = sourceType;
