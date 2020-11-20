@@ -7,8 +7,8 @@ namespace MappingGenerator.Generator
         public static string Format(ITypeSymbol type) =>
 $@"static class {type.Name}_MappingExtensions
     {{
-        public static {type.Name}_Mapper Map(this {type.Name} t) =>
-            new {type.Name}_Mapper(t);
+        public static {type.GetQualifiedName()}_Mapper Map(this {type.GetQualifiedName()} t) =>
+            new {type.GetQualifiedName()}_Mapper(t);
     }}";
     }
 }

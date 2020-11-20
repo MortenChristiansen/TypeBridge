@@ -16,8 +16,8 @@ namespace MappingGenerator.Sample
             var b1 = new B();
             //A a2 = b.Map();
             var b2 = new B();
-            b1.DoStuff<Task>(b2.Map());
-            b1.DoThing(b2.Map());
+            //b1.DoStuff<Task>(b2.Map());
+            //b1.DoThing(b2.Map());
         }
     }
 
@@ -58,6 +58,27 @@ namespace MappingGenerator.Sample
      - Test if there is a valid constructor we can use in the destination class.
      - Handle mapping properties that can be implicitly converted or otherwise assigned to the receiving property.
      - The mapper class should not have all the fields but just have the source object instead. This saves copying all the properties.
-     - Handle case where we have not included namespace of the type being mapped. This can happen if the type is only indirectly referenced, fx through 'var'.
      */
+}
+
+namespace MappingGenerator.Other
+{
+    public class D
+    {
+        public Sample.A AValue { get; set; }
+        public Sample.B BValue { get; set; }
+    }
+}
+
+namespace MappingGenerator.Different
+{
+    public class E
+    {
+        public E()
+        {
+            Other.D d = new Other.D();
+            Other.D d2 = new Other.D();
+            d2.BValue = d.AValue.Map();
+        }
+    }
 }

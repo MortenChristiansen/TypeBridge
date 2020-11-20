@@ -10,32 +10,12 @@ namespace MappingGenerator.Generator
 
         public void OnVisitSyntaxNode(SyntaxNode syntaxNode)
         {
-            // Match the map method
-            if (syntaxNode is InvocationExpressionSyntax
-                {
-                    ArgumentList:
-                    {
-                        Arguments:
-                        {
-                            Count: 0
-                        }
-                    }
-                ,
-                    Expression: MemberAccessExpressionSyntax
-                    {
-                        Name:
-                        {
-                            Identifier:
-                            {
-                                ValueText: "Map"
-                            }
-                        },
-                        Expression: IdentifierNameSyntax
-                        {
+            //System.Diagnostics.Debugger.Launch();
 
-                        } source
-                    }
-                })
+            // Match the map method
+            var source = GetMapSourceNode(syntaxNode);
+
+            if (source != null)
             {
                 //System.Diagnostics.Debugger.Launch();
 
@@ -86,6 +66,26 @@ namespace MappingGenerator.Generator
                     PropertyAssignments.Add((source, argument, SyntaxType.MethodArgument));
                 }
             }
+        }
+
+        private SyntaxNode GetMapSourceNode(SyntaxNode syntaxNode)
+        {
+            return syntaxNode switch
+            {
+                InvocationExpressionSyntax
+                {
+                    ArgumentList: { Arguments: { Count: 0 } },
+                    Expression: MemberAccessExpressionSyntax { Name: { Identifier: { ValueText: "Map" } }, Expression: IdentifierNameSyntax {} identifierNode }
+                } => identifierNode,
+
+                InvocationExpressionSyntax
+                {
+                    ArgumentList: { Arguments: { Count: 0 } },
+                    Expression: MemberAccessExpressionSyntax { Name: { Identifier: { ValueText: "Map" } }, Expression: MemberAccessExpressionSyntax {} memberAccessNode }
+                } => memberAccessNode,
+
+                _ => null
+            };
         }
     }
 
