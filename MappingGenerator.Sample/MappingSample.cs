@@ -8,19 +8,21 @@ namespace MappingGenerator.Sample
 {
     class MappingSample
     {
-        private Other.D _d;
+        private A _a;
+
+        public A AProperty { get; set; }
 
         public void Sample()
         {
             //var c = new C();
             //var a = new A();
             //c.BValue = a.Map();
-            var b1 = new B();
+            //var b1 = new B();
             //A a2 = b.Map();
             var b2 = new B();
-            B b3 = b2.Map();
-            _d = b2.Map();
-            b1.DoStuff(b2.Map(), 9);
+            //B b3 = b2.Map();
+            AProperty = b2.Map();
+            //b1.DoStuff(b2.Map(), 9);
             //b1.DoThing(b2.Map());
             //(A, B) gg = (b1.Map(), b2);
         }
@@ -64,15 +66,15 @@ namespace MappingGenerator.Other
     }
 }
 
-namespace MappingGenerator.Different
-{
-    public class E
-    {
-        public E()
-        {
-            Other.D d = new Other.D();
-            Other.D d2 = new Other.D();
-            d2.BValue = d.AValue.Map();
-        }
-    }
-}
+//namespace MappingGenerator.Different
+//{
+//    public class E
+//    {
+//        public E()
+//        {
+//            Other.D d = new Other.D();
+//            Other.D d2 = new Other.D();
+//            d2.BValue = d.AValue.Map();
+//        }
+//    }
+//}

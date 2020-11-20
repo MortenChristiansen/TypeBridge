@@ -10,8 +10,6 @@ namespace MappingGenerator.Generator
 
         public void OnVisitSyntaxNode(SyntaxNode syntaxNode)
         {
-            //System.Diagnostics.Debugger.Launch();
-
             // Match the map method
             var source = GetMapSourceNode(syntaxNode);
 
@@ -20,50 +18,32 @@ namespace MappingGenerator.Generator
                 //System.Diagnostics.Debugger.Launch();
 
                 // Match "a.B = X"
-                if (syntaxNode.Parent is AssignmentExpressionSyntax
-                    {
-                        Left: MemberAccessExpressionSyntax
-                        {
-                            Expression: IdentifierNameSyntax
-                            {
-                            },
-                            Name: IdentifierNameSyntax
-                            {
-
-                            } property // The property "B"
-                        }
-                    })
+                if (syntaxNode.Parent is AssignmentExpressionSyntax { Left: MemberAccessExpressionSyntax { Expression: IdentifierNameSyntax {}, Name: IdentifierNameSyntax {} property } })
                 {
-                    //System.Diagnostics.Debugger.Launch();
                     PropertyAssignments.Add((source, property, SyntaxType.Default));
+                    return;
+                }
+
+                // Match "_a = X"
+                if (syntaxNode.Parent is AssignmentExpressionSyntax { Left: IdentifierNameSyntax {} member })
+                {
+                    PropertyAssignments.Add((source, member, SyntaxType.Default));
+                    return;
                 }
 
                 // Match "B b = X"
-                if (syntaxNode.Parent is EqualsValueClauseSyntax
-                    {
-                        Parent: VariableDeclaratorSyntax
-                        {
-                            Parent: VariableDeclarationSyntax
-                            {
-                                Type: IdentifierNameSyntax
-                                {
-
-                                } type
-                            }
-                        }
-                    })
+                if (syntaxNode.Parent is EqualsValueClauseSyntax { Parent: VariableDeclaratorSyntax { Parent: VariableDeclarationSyntax { Type: IdentifierNameSyntax {} type } } })
                 {
-                    //System.Diagnostics.Debugger.Launch();
                     PropertyAssignments.Add((source, type, SyntaxType.Default));
+                    return;
 
                 }
 
                 // Match "a.SomeMethod(X)"
-                if (syntaxNode.Parent is ArgumentSyntax
-                    {
-                    } argument)
+                if (syntaxNode.Parent is ArgumentSyntax {} argument)
                 {
                     PropertyAssignments.Add((source, argument, SyntaxType.MethodArgument));
+                    return;
                 }
             }
         }
