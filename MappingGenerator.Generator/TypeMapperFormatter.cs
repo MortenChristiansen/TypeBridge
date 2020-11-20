@@ -28,11 +28,11 @@ namespace MappingGenerator.Generator
         public string Format() =>
 $@"sealed class {_sourceType.Name}_Mapper
     {{
-        {string.Join($"{Environment.NewLine}        ", _sourceType.GetMembers().OfType<IPropertySymbol>().Select(p => $"public {p.Type} {p.Name} {{ get; }}"))}
+        private readonly {_sourceType.Name} _source;
 
-        public {_sourceType.Name}_Mapper({_sourceType.Name} v)
+        public {_sourceType.Name}_Mapper({_sourceType.Name} source)
         {{
-            {string.Join($"{Environment.NewLine}            ", _sourceType.GetMembers().OfType<IPropertySymbol>().Select(p => $"{p.Name} = v.{p.Name};"))}
+            _source = source;
         }}
 
         {string.Join(Environment.NewLine, _destinationTypes.Select(FormatImplicitOperator))}
@@ -59,7 +59,7 @@ $@"public static implicit operator {destinationType.GetQualifiedName()}({_source
             return
 $@"            new {destinationType.GetQualifiedName()}()
             {{
-                {string.Join($",{Environment.NewLine}                ", destinationProperties.Select(p => $"{p.Name} = m.{p.Name}"))}
+                {string.Join($",{Environment.NewLine}                ", destinationProperties.Select(p => $"{p.Name} = m._source.{p.Name}"))}
             }}";
         }
     }

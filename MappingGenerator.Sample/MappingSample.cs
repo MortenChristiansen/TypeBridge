@@ -16,6 +16,7 @@ namespace MappingGenerator.Sample
             var b1 = new B();
             //A a2 = b.Map();
             var b2 = new B();
+            B b3 = b2.Map();
             //b1.DoStuff<Task>(b2.Map());
             //b1.DoThing(b2.Map());
             //(A, B) gg = (b1.Map(), b2);
@@ -51,16 +52,15 @@ namespace MappingGenerator.Sample
     }
 
     /* TODO 
-     - Do not generate map method if a valid method with the same name already exists
      - If the two types are the same, just return the original (or do not emit a mapping method)
      - Recursively map complex types (including collections)
      - Support property initializer.
      - Support mapping from tuples.
      - Test if there is a valid constructor we can use in the destination class.
      - Handle mapping properties that can be implicitly converted or otherwise assigned to the receiving property.
-     - The mapper class should not have all the fields but just have the source object instead. This saves copying all the properties.
      - Should we support mapping when the source has more fields?
      - Test that various combinations of mappers do not interfere - such as by causing ambiguities.
+     - Support new Thing().Map();
      */
 }
 
