@@ -3,9 +3,14 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30709.132
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MappingGenerator.Sample", "MappingGenerator.Sample\MappingGenerator.Sample.csproj", "{E8CB1DD9-34F1-4B04-9D4A-64C85B370302}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MappingGenerator.Sample", "MappingGenerator.Sample\MappingGenerator.Sample.csproj", "{E8CB1DD9-34F1-4B04-9D4A-64C85B370302}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MappingGenerator.Generator", "MappingGenerator.Generator\MappingGenerator.Generator.csproj", "{7D1AD8F1-F9E9-4280-B8BD-7DEA5C0F78FE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MappingGenerator.Generator", "MappingGenerator.Generator\MappingGenerator.Generator.csproj", "{7D1AD8F1-F9E9-4280-B8BD-7DEA5C0F78FE}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "OtherFiles", "OtherFiles", "{737E6893-525E-4E57-BA91-56C496B3325C}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
