@@ -9,22 +9,22 @@ This library is very new and as such lacks many essential features and will most
 spectacularly if used in anything resembling production. The below list enumerates the features
 which I have currently identified as reasonable for the library to have.
 
-[x] `B b = a.Map(); // Variable assignment`
-[x] `a.B = c.Map(); // Property assignment`
-[x] `Process(a.Map());`
-[x] `Process<T>(a.Map(), t); // Mapping to a non-generic type`
-[ ] `Process<T>(a.Map()); // Mapping to type T`
-[ ] `_a = b.Map(); // Member assignment`
-[ ] `var v = new B{ CValue = a.Map() }; // Object initializers`
-[ ] `B b = new B().Map(); // New object assignment`
-[ ] Handle destination types without a public default constructor
-[ ] Recursively map complex types (this will change the behavior of mapping a type to its own type to be a deep copy)
-[ ] Map collections
-[ ] Map properties that can implicitly be converted or is otherwise directly assignable without having the same type
-[ ] Support mapping from a type with more fields than the recipient
-[ ] Handle non-writable properties in the destination and non-readable properties in the source
-[ ] Verify that different mappings will not clash or cause ambiguities
-[ ] Extending the source type with other types, merging the properties into the resulting output
+- [x] `B b = a.Map(); // Variable assignment`
+- [x] `a.B = c.Map(); // Property assignment`
+- [x] `Process(a.Map());`
+- [x] `Process<T>(a.Map(), t); // Mapping to a non-generic type`
+- [ ] `Process<T>(a.Map()); // Mapping to type T`
+- [ ] `_a = b.Map(); // Member assignment`
+- [ ] `var v = new B{ CValue = a.Map() }; // Object initializers`
+- [ ] `B b = new B().Map(); // New object assignment`
+- [ ] Handle destination types without a public default constructor
+- [ ] Recursively map complex types (this will change the behavior of mapping a type to its own type to be a deep copy)
+- [ ] Map collections
+- [ ] Map properties that can implicitly be converted or is otherwise directly assignable without having the same type
+- [ ] Support mapping from a type with more fields than the recipient
+- [ ] Handle non-writable properties in the destination and non-readable properties in the source
+- [ ] Verify that different mappings will not clash or cause ambiguities
+- [ ] Extending the source type with other types, merging the properties into the resulting output
 
 ## Features
 
