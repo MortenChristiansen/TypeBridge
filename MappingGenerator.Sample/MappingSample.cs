@@ -18,6 +18,7 @@ namespace MappingGenerator.Sample
             var b2 = new B();
             //b1.DoStuff<Task>(b2.Map());
             //b1.DoThing(b2.Map());
+            //(A, B) gg = (b1.Map(), b2);
         }
     }
 
@@ -58,6 +59,8 @@ namespace MappingGenerator.Sample
      - Test if there is a valid constructor we can use in the destination class.
      - Handle mapping properties that can be implicitly converted or otherwise assigned to the receiving property.
      - The mapper class should not have all the fields but just have the source object instead. This saves copying all the properties.
+     - Should we support mapping when the source has more fields?
+     - Test that various combinations of mappers do not interfere - such as by causing ambiguities.
      */
 }
 

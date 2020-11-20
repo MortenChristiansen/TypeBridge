@@ -42,9 +42,10 @@ namespace MappingGenerator.Generator
         {
             var foundTypes = new HashSet<(ITypeSymbol Source, ITypeSymbol Destination)>();
 
+            //System.Diagnostics.Debugger.Launch();
+
             foreach ((var source, var destination, var type) in args)
             {
-                //System.Diagnostics.Debugger.Launch();
                 var semanticModel = compilation.GetSemanticModel(source.SyntaxTree);
 
                 var sourceType = semanticModel.GetTypeInfo(source).Type;
@@ -139,12 +140,22 @@ namespace MappingGenerator.Generator
                         continue;
                 }
 
-                foundTypes.Add((sourceType, destinationType));
-                yield return new MappingInfo { SourceType = sourceType, DestinationType = destinationType };
+                if (destinationType != null)
+                {
+                    foundTypes.Add((sourceType, destinationType));
+                    yield return new MappingInfo { SourceType = sourceType, DestinationType = destinationType };
+                }
             }
         }
 
-        private IParameterSymbol GetParameter(SemanticModel semanticModel, IdentifierNameSyntax methodOwner, SyntaxToken methodName, SeparatedSyntaxList<ArgumentSyntax> arguments, TypeArgumentListSyntax genericArguments, ArgumentSyntax argument) =>
+        private IParameterSymbol GetParameter(
+            SemanticModel semanticModel,
+            IdentifierNameSyntax methodOwner,
+            SyntaxToken methodName,
+            SeparatedSyntaxList<ArgumentSyntax> arguments,
+            TypeArgumentListSyntax genericArguments,
+            ArgumentSyntax argument
+        ) =>
             semanticModel
                 .GetTypeInfo(methodOwner)
                 .Type?
