@@ -88,11 +88,39 @@ namespace MappingGenerator.Generator
                             Arguments:
                             {
                               
+                            } methodArguments
+                        }
+                    } methodArgument)
+                {
+                    var parameter = GetParameter(semanticModel, methodOwner, methodName, methodArguments, null, methodArgument);
+                    if (parameter == null)
+                        continue;
+
+                    destinationType = parameter.Type;
+                    if (destinationType is null || foundTypes.Contains((sourceType, destinationType)))
+                        continue;
+                }
+
+                // Constructor method
+                if (type == SyntaxType.MethodArgument && destination is ArgumentSyntax
+                    {
+                        Parent: ArgumentListSyntax
+                        {
+                            Parent: ObjectCreationExpressionSyntax
+                            {
+                                Type: TypeSyntax
+                                {
+
+                                } constructedType
+                            },
+                            Arguments:
+                            {
+
                             } arguments
                         }
-                    } argument)
+                    } constructorArgument)
                 {
-                    var parameter = GetParameter(semanticModel, methodOwner, methodName, arguments, null, argument);
+                    var parameter = GetConstructorParameter(semanticModel, constructedType, arguments, null, constructorArgument);
                     if (parameter == null)
                         continue;
 
@@ -168,6 +196,25 @@ namespace MappingGenerator.Generator
                 .Select(m => (Match: HasMatchingParameters(m, arguments, argument, genericArguments, out var matchingParameter), matchingParameter))
                 .FirstOrDefault(v => v.Match)
                 .matchingParameter;
+
+        private IParameterSymbol GetConstructorParameter(
+            SemanticModel semanticModel,
+            TypeSyntax constructedType,
+            SeparatedSyntaxList<ArgumentSyntax> arguments,
+            TypeArgumentListSyntax genericArguments,
+            ArgumentSyntax argument
+        )
+        {
+            var symbol = semanticModel
+                .GetSymbolInfo(constructedType)
+                .Symbol as INamedTypeSymbol;
+
+            return symbol
+                .Constructors
+                .Select(m => (Match: HasMatchingParameters(m, arguments, argument, genericArguments, out var matchingParameter), matchingParameter))
+                .FirstOrDefault(v => v.Match)
+                .matchingParameter;
+        }
 
         // For normal methods
         private bool HasMatchingParameters(IMethodSymbol method, SeparatedSyntaxList<ArgumentSyntax> argumentList, ArgumentSyntax argument, TypeArgumentListSyntax typeArguments, out IParameterSymbol matchingParameter)

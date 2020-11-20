@@ -31,7 +31,7 @@ namespace MappingGenerator.Sample
             //    AValue = b2.Map()
             //};
 
-            var d2 = new Other.D(b2.Map());
+            var d2 = new C(b2.Map());
         }
     }
 
@@ -61,6 +61,17 @@ namespace MappingGenerator.Sample
     {
         public A AValue { get; set; }
         public B BValue { get; set; }
+
+        public C(A a)
+        {
+            AValue = a;
+        }
+
+        public C(A a, B b)
+        {
+            AValue = a;
+            BValue = b;
+        }
     }
 }
 

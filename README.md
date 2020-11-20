@@ -12,7 +12,9 @@ which I have currently identified as reasonable for the library to have.
 - [x] `B b = a.Map(); // Variable assignment`
 - [x] `a.B = c.Map(); // Property assignment`
 - [x] `Process(a.Map()); // Method argument`
-- [ ] `new B(a.Map()); // Constructor argument`
+- [x] `new B(a.Map()); // Constructor argument`
+- [ ] `new B<T>(a.Map(), t); // Mapping to a non-generic constructor argument`
+- [ ] `new B<T>(a.Map()); // Mapping to a generic constructor argument`
 - [x] `Process<T>(a.Map(), t); // Mapping to a non-generic type`
 - [ ] `Process<T>(a.Map()); // Mapping to type T`
 - [x] `_a = b.Map(); // Member assignment`
