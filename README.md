@@ -11,12 +11,12 @@ which I have currently identified as reasonable for the library to have.
 
 - [x] `B b = a.Map(); // Variable assignment`
 - [x] `a.B = c.Map(); // Property assignment`
-- [x] `Process(a.Map());`
+- [x] `Process(a.Map()); // Method argument`
+- [ ] `new B(a.Map()); // Constructor argument`
 - [x] `Process<T>(a.Map(), t); // Mapping to a non-generic type`
 - [ ] `Process<T>(a.Map()); // Mapping to type T`
 - [x] `_a = b.Map(); // Member assignment`
-- [ ] `var v = new B { CValue = a.Map() }; // Object initializers`
-- [ ] `B b = new B().Map(); // New object assignment`
+- [x] `var v = new B { CValue = a.Map() }; // Object initializers`
 - [ ] Handle destination types without a public default constructor
 - [ ] Recursively map complex types (this will change the behavior of mapping a type to its own type to be a deep copy)
 - [ ] Map collections

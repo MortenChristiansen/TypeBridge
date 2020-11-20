@@ -21,10 +21,17 @@ namespace MappingGenerator.Sample
             //A a2 = b.Map();
             var b2 = new B();
             //B b3 = b2.Map();
-            AProperty = b2.Map();
+            //AProperty = b2.Map();
             //b1.DoStuff(b2.Map(), 9);
             //b1.DoThing(b2.Map());
             //(A, B) gg = (b1.Map(), b2);
+
+            //var d = new Other.D
+            //{
+            //    AValue = b2.Map()
+            //};
+
+            var d2 = new Other.D(b2.Map());
         }
     }
 
@@ -63,6 +70,16 @@ namespace MappingGenerator.Other
     {
         public Sample.A AValue { get; set; }
         public Sample.B BValue { get; set; }
+
+        public D()
+        {
+
+        }
+
+        public D(Sample.A a)
+        {
+            AValue = a;
+        }
     }
 }
 
