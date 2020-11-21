@@ -26,9 +26,11 @@ namespace MappingGenerator.Generator
             return this;
         }
 
+        // IArrayTypeSymbol
+
         private bool IsMappable(ITypeSymbol sourceType, ITypeSymbol destinationType)
         {
-            //System.Diagnostics.Debugger.Launch();
+           // System.Diagnostics.Debugger.Launch();
 
             if (destinationType.IsAbstract && destinationType.TypeKind == TypeKind.Class)
                 return false;
@@ -37,10 +39,8 @@ namespace MappingGenerator.Generator
                 return true;
 
             // Also suppor any combination of IEnumerable and List
-            if (TryGetCollectionType(sourceType, out var sourceListType, "List", "IEnumerable") && TryGetCollectionType(destinationType, out var destinationListType, "List", "IEnumerable"))
+            if (TryGetCollectionType(sourceType, out var sourceElementType, out var _) && TryGetCollectionType(destinationType, out var destinationElementType, out var _))
             {
-                var sourceElementType = sourceListType.TypeArguments[0];
-                var destinationElementType = destinationListType.TypeArguments[0];
                 if (IsMappable(sourceElementType, destinationElementType))
                     return true;
 
@@ -55,16 +55,26 @@ namespace MappingGenerator.Generator
             return destinationProperties.All(d => sourceProperties.Any(s => d.Name == s.Name && IsMappable(s.Type, d.Type)));
         }
 
-        private bool TryGetCollectionType(ITypeSymbol type, out INamedTypeSymbol listType, params string[] names)
+        private bool TryGetCollectionType(ITypeSymbol type, out ITypeSymbol elementType, out string postfix)
         {
+            var names = new[] { "List", "IEnumerable" };
+
             if (names.Contains(type.Name) && type is INamedTypeSymbol list && list.TypeArguments.Length == 1)
             {
-                listType = list;
+                elementType = list.TypeArguments[0];
+                postfix = ".ToList()";
+                return true;
+            }
+            else if (type is IArrayTypeSymbol arraySymbol)
+            {
+                elementType = arraySymbol.ElementType;
+                postfix = ".ToArray()";
                 return true;
             }
             else
             {
-                listType = null;
+                elementType = null;
+                postfix = null;
                 return false;
             }
         }
@@ -129,12 +139,9 @@ $@"public static implicit operator {destinationType.GetQualifiedName()}({sourceT
             if (IsAssignable(sourceType, destinationType))
                 return $"                {sourceName}";
 
-            if (TryGetCollectionType(sourceType, out var sourceListType, "List", "IEnumerable") && TryGetCollectionType(destinationType, out var destinationListType, "List", "IEnumerable"))
+            if (TryGetCollectionType(sourceType, out var sourceElementType, out var _) && TryGetCollectionType(destinationType, out var destinationElementType, out var postfix))
             {
-                var sourceElementType = sourceListType.TypeArguments[0];
-                var destinationElementType = destinationListType.TypeArguments[0];
-
-                return $"{sourceName}.Select(x{nextListNameNumber} => {FormatMapping($"x{(nextListNameNumber++)}", sourceElementType, destinationElementType, nextListNameNumber)}).ToList()";
+                return $"{sourceName}.Select(x{nextListNameNumber} => {FormatMapping($"x{nextListNameNumber++}", sourceElementType, destinationElementType, nextListNameNumber)}){postfix}";
             }
 
             var sourceProperties = GetPropertiesRecursively(sourceType);

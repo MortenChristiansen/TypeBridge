@@ -24,7 +24,7 @@ which I have currently identified as reasonable for the library to have.
 - [ ] Map collections
 - [x] Map List<T> properties
 - [x] Map IEnumerable<T> properties
-- [ ] Map T[] properties
+- [x] Map T[] properties
 - [ ] Map properties where source type has implicit conversion to destination type
 - [ ] Map properties where source type has explicit conversion to destination type
 - [x] Map properties where source type is subtype of destination
@@ -83,3 +83,5 @@ mapping to the abstract class.
 
 Mapping of non-generic collections is not supported since there is no way to know that the actual
 types of the objects are.
+
+Mapping of multidimensional arrays are consided too niche a use case and is therefore not supported.
