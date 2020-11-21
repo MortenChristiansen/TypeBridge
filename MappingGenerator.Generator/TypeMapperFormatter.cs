@@ -16,7 +16,7 @@ namespace MappingGenerator.Generator
         public TypeMapperFormatter(ITypeSymbol sourceType)
         {
             _sourceType = sourceType;
-            _sourceProperties = _sourceType.GetMembers().OfType<IPropertySymbol>().ToList();
+            _sourceProperties = GetPropertiesRecursively(_sourceType).ToList();
         }
 
         public TypeMapperFormatter AddDestinationType(ITypeSymbol type)
@@ -46,19 +46,38 @@ $@"public static implicit operator {destinationType.GetQualifiedName()}({_source
 
         private bool CanMap(ITypeSymbol destinationType)
         {
-            var destinationProperties = destinationType.GetMembers().OfType<IPropertySymbol>().ToList();
+            //System.Diagnostics.Debugger.Launch();
+
+            if (IsAssignable(_sourceType, destinationType))
+                return true;
+
+            var destinationProperties = GetPropertiesRecursively(destinationType).ToList();
             if (destinationProperties.Count > _sourceProperties.Count)
                 return false;
 
-            // TODO: More robust implementation
-            
-            
             return destinationProperties.All(d => _sourceProperties.Any(s => d.Name.Equals(s.Name, StringComparison.InvariantCultureIgnoreCase) && IsAssignable(s.Type, d.Type)));
+        }
+
+        private IEnumerable<IPropertySymbol> GetPropertiesRecursively(ITypeSymbol type)
+        {
+            foreach (var property in type.GetMembers().OfType<IPropertySymbol>().Where(p => !p.IsStatic && !p.IsIndexer && p.DeclaredAccessibility != Accessibility.Private))
+                yield return property;
+
+            if (type.BaseType != null)
+            {
+                foreach (var childProperty in GetPropertiesRecursively(type.BaseType))
+                {
+                    yield return childProperty;
+                }
+            }
         }
 
         private string FormatMapping(ITypeSymbol destinationType)
         {
-            var destinationProperties = destinationType.GetMembers().OfType<IPropertySymbol>().ToList();
+            if (IsAssignable(_sourceType, destinationType))
+                return "                m._source";
+
+            var destinationProperties = GetPropertiesRecursively(destinationType).ToList();
 
             return
 $@"            new {destinationType.GetQualifiedName()}()

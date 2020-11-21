@@ -34,21 +34,36 @@ namespace MappingGenerator.Sample
 
             //var d2 = new C(b2.Map());
 
-            var c = new C(new A());
-            G g = c.Map();
+            //var c = new C(new A());
+            //G g = c.Map();
+            //A a1 = new A();
+            var b = new B();
+            //A a2 = a1.Map();
+
+
+            BaseA a3 = b.Map();
+            A a = b.Map();
         }
     }
 
-    public class A : IA
+    public class BaseA
     {
         public int Age { get; set; }
+    }
+
+    public class A : BaseA, IA
+    {
         public string Name { get; set; }
     }
 
-    public class B
+    public class BaseB
+    {
+        public string Name { get; set; }
+    }
+
+    public class B : BaseB
     {
         public int Age { get; set; }
-        public string Name { get; set; }
 
         public void DoThing(A a)
         {

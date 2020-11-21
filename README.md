@@ -25,6 +25,7 @@ which I have currently identified as reasonable for the library to have.
 - [ ] Map properties where source type has implicit conversion to destination type
 - [ ] Map properties where source type has explicit conversion to destination type
 - [x] Map properties where source type is subtype of destination
+- [ ] Map properties where source type is subtype of and destination is an abstract class
 - [x] Map properties where destination type is interface which source type implements
 - [x] Support mapping from a type with more fields than the recipient
 - [ ] Verify that different mappings will not clash or cause ambiguities
@@ -47,7 +48,7 @@ var command = new CreateCustomerCommand(name, customerNumber);
 Customer customer = command.Map();
 ```
 
-Mapping to the same type as the source will create a shallow copy of object.
+Mapping to a type that is assignable from the source type simply returns the source instance.
 
 The technical solution to implement the mapping is that `Map` returns object of an intermediary
 mapping type which has an implicit conversion operator to each recepient type.
@@ -69,3 +70,7 @@ similar enough to an existing case. Also, if a mathing mapping has already been 
 use of the `Map` method, it will become avaiable everywhere regardless if it is supported.
 
 Mapping to values in tuple types is particularly complex, so it is unlikely to make it into 1.0.
+
+Mapping to and from interface types is not supported, since C# does not allow you to implement custom
+convertions for interfaces in either direction. This limitation is specific to the root type being
+mapped, not the properties of child objects.
