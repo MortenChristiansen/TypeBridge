@@ -22,8 +22,10 @@ which I have currently identified as reasonable for the library to have.
 - [ ] Handle destination types without a public default constructor
 - [ ] Recursively map complex types (simple pass-through if they are the same type?)
 - [ ] Map collections
+- [ ] Map properties where source type has implicit conversion to destination type
+- [ ] Map properties where source type has explicit conversion to destination type
 - [x] Map properties where source type is subtype of destination
-- [ ] Map properties where destination type is interface which source type implements
+- [x] Map properties where destination type is interface which source type implements
 - [x] Support mapping from a type with more fields than the recipient
 - [ ] Verify that different mappings will not clash or cause ambiguities
 - [ ] Extending the source type with other types, merging the properties into the resulting output

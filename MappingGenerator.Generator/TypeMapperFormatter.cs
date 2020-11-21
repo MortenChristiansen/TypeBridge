@@ -72,8 +72,11 @@ $@"            new {destinationType.GetQualifiedName()}()
             if (source.GetHashCode() == destination.GetHashCode())
                 return true;
 
-            if (source.BaseType != null)
-                return IsAssignable(source.BaseType, destination);
+            if (source.Interfaces.Any(i => i == destination))
+                return true;
+
+            if (source.BaseType != null && IsAssignable(source.BaseType, destination))
+                return true;
 
             return false;
         }

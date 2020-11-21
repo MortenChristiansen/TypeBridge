@@ -17,13 +17,13 @@ namespace MappingGenerator.Sample
             //var c = new C();
             //var a = new A();
             //c.BValue = a.Map();
-            var b1 = new B();
+            //var b1 = new B();
             //A a2 = b.Map();
-            var b2 = new B();
+            //var b2 = new B();
             //var f = new F<A>(b2.Map());
             //B b3 = b2.Map();
             //AProperty = b2.Map();
-            b1.DoStuff<A>(b2.Map());
+            //b1.DoStuff<A>(b2.Map());
             //b1.DoThing(b2.Map());
             //(A, B) gg = (b1.Map(), b2);
 
@@ -33,10 +33,13 @@ namespace MappingGenerator.Sample
             //};
 
             //var d2 = new C(b2.Map());
+
+            var c = new C(new A());
+            G g = c.Map();
         }
     }
 
-    public class A
+    public class A : IA
     {
         public int Age { get; set; }
         public string Name { get; set; }
@@ -80,6 +83,12 @@ namespace MappingGenerator.Sample
         }
     }
 
+    public interface IA
+    {
+        int Age { get; set; }
+        string Name { get; set; }
+    }
+
     public class F<T>
     {
         public F(T t)
@@ -91,6 +100,12 @@ namespace MappingGenerator.Sample
         {
 
         }
+    }
+
+    public class G
+    {
+        public IA AValue { get; set; }
+        public B BValue { get; set; }
     }
 }
 
