@@ -23,7 +23,7 @@ which I have currently identified as reasonable for the library to have.
 - [x] Recursively map complex types
 - [ ] Map collections
 - [x] Map List<T> properties
-- [ ] Map IEnumerable<T> properties
+- [x] Map IEnumerable<T> properties
 - [ ] Map T[] properties
 - [ ] Map properties where source type has implicit conversion to destination type
 - [ ] Map properties where source type has explicit conversion to destination type

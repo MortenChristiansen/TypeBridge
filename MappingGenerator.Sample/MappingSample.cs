@@ -72,22 +72,22 @@ namespace MappingGenerator.Sample
 
     public class M1
     {
-        public List<A> Items { get; set; }
+        public IEnumerable<A> Items { get; set; }
     }
 
     public class M2
     {
-        public List<B> Items { get; set; }
+        public IEnumerable<B> Items { get; set; }
     }
 
     public class M11
     {
-        public List<M1> Items { get; set; }
+        public IEnumerable<M1> Items { get; set; }
     }
 
     public class M22
     {
-        public List<M2> Items { get; set; }
+        public IEnumerable<M2> Items { get; set; }
     }
 
     public abstract class BaseA

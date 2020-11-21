@@ -30,13 +30,14 @@ namespace MappingGenerator.Generator
         {
             //System.Diagnostics.Debugger.Launch();
 
-            if (destinationType.IsAbstract)
+            if (destinationType.IsAbstract && destinationType.TypeKind == TypeKind.Class)
                 return false;
 
             if (IsAssignable(sourceType, destinationType))
                 return true;
 
-            if (TryGetListType(sourceType, out var sourceListType) && TryGetListType(destinationType, out var destinationListType))
+            // Also suppor any combination of IEnumerable and List
+            if (TryGetCollectionType(sourceType, out var sourceListType, "List", "IEnumerable") && TryGetCollectionType(destinationType, out var destinationListType, "List", "IEnumerable"))
             {
                 var sourceElementType = sourceListType.TypeArguments[0];
                 var destinationElementType = destinationListType.TypeArguments[0];
@@ -54,9 +55,9 @@ namespace MappingGenerator.Generator
             return destinationProperties.All(d => sourceProperties.Any(s => d.Name == s.Name && IsMappable(s.Type, d.Type)));
         }
 
-        private bool TryGetListType(ITypeSymbol type, out INamedTypeSymbol listType)
+        private bool TryGetCollectionType(ITypeSymbol type, out INamedTypeSymbol listType, params string[] names)
         {
-            if (type.Name == "List" && type is INamedTypeSymbol list && list.TypeArguments.Length == 1)
+            if (names.Contains(type.Name) && type is INamedTypeSymbol list && list.TypeArguments.Length == 1)
             {
                 listType = list;
                 return true;
@@ -128,7 +129,7 @@ $@"public static implicit operator {destinationType.GetQualifiedName()}({sourceT
             if (IsAssignable(sourceType, destinationType))
                 return $"                {sourceName}";
 
-            if (TryGetListType(sourceType, out var sourceListType) && TryGetListType(destinationType, out var destinationListType))
+            if (TryGetCollectionType(sourceType, out var sourceListType, "List", "IEnumerable") && TryGetCollectionType(destinationType, out var destinationListType, "List", "IEnumerable"))
             {
                 var sourceElementType = sourceListType.TypeArguments[0];
                 var destinationElementType = destinationListType.TypeArguments[0];
