@@ -37,12 +37,15 @@ namespace MappingGenerator.Sample
             //var c = new C(new A());
             //G g = c.Map();
             //A a1 = new A();
-            var b = new B();
+            //var b = new B();
             //A a2 = a1.Map();
 
 
-            BaseA a3 = b.Map();
-            A a = b.Map();
+            //BaseA a3 = b.Map();
+            //A a = b.Map();
+
+            var g = new G();
+            C c = g.Map();
         }
     }
 
@@ -85,6 +88,11 @@ namespace MappingGenerator.Sample
     {
         public A AValue { get; set; }
         public B BValue { get; set; }
+
+        public C()
+        {
+
+        }
 
         public C(A a)
         {
