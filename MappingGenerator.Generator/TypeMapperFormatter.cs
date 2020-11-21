@@ -53,7 +53,7 @@ $@"public static implicit operator {destinationType.GetQualifiedName()}({_source
             // TODO: More robust implementation
             
             
-            return destinationProperties.All(d => _sourceProperties.Any(s => d.Name.Equals(s.Name, StringComparison.InvariantCultureIgnoreCase) && d.Type.GetHashCode() == s.Type.GetHashCode()));
+            return destinationProperties.All(d => _sourceProperties.Any(s => d.Name.Equals(s.Name, StringComparison.InvariantCultureIgnoreCase) && IsAssignable(s.Type, d.Type)));
         }
 
         private string FormatMapping(ITypeSymbol destinationType)
@@ -65,6 +65,17 @@ $@"            new {destinationType.GetQualifiedName()}()
             {{
                 {string.Join($",{Environment.NewLine}                ", destinationProperties.Select(p => $"{p.Name} = m._source.{p.Name}"))}
             }}";
+        }
+
+        private bool IsAssignable(ITypeSymbol source, ITypeSymbol destination)
+        {
+            if (source.GetHashCode() == destination.GetHashCode())
+                return true;
+
+            if (source.BaseType != null)
+                return IsAssignable(source.BaseType, destination);
+
+            return false;
         }
     }
 }
