@@ -125,9 +125,26 @@ namespace MappingGenerator.Generator
                     if (parameter == null)
                         continue;
 
-                    destinationType = parameter.Type;
-                    if (destinationType is null || foundTypes.Contains((sourceType, destinationType)) || destinationType.TypeKind == TypeKind.TypeParameter)
+                    var potentiallyGenericDestinationType = parameter.Type;
+                    if (potentiallyGenericDestinationType is null || foundTypes.Contains((sourceType, potentiallyGenericDestinationType)))
                         continue;
+
+                    if (potentiallyGenericDestinationType.TypeKind == TypeKind.TypeParameter)
+                    {
+                        var methodSymbol = potentiallyGenericDestinationType.ContainingSymbol as IMethodSymbol;
+                        var typeArgumentIndex = methodSymbol.TypeArguments.IndexOf(potentiallyGenericDestinationType);
+                        if (typeArgumentIndex >= 0 && typeArguments.Arguments.Count > typeArgumentIndex)
+                        {
+                            var argument = GetNamedType(semanticModel, typeArguments.Arguments[typeArgumentIndex]);
+
+                            if (argument != null &&!foundTypes.Contains((sourceType, potentiallyGenericDestinationType)))
+                                destinationType = argument;
+                        }
+                    }
+                    else
+                    {
+                        destinationType = potentiallyGenericDestinationType;
+                    }
                 }
 
                 if (destinationType != null)
@@ -164,16 +181,15 @@ namespace MappingGenerator.Generator
             ArgumentSyntax argument
         )
         {
-            var symbol = semanticModel
-                .GetSymbolInfo(constructedType)
-                .Symbol as INamedTypeSymbol;
-
-            return symbol
+            return GetNamedType(semanticModel, constructedType)?
                 .Constructors
                 .Select(m => (Match: HasMatchingParameters(m, arguments, argument, genericArguments, out var matchingParameter), matchingParameter))
                 .FirstOrDefault(v => v.Match)
                 .matchingParameter;
         }
+
+        private static INamedTypeSymbol GetNamedType(SemanticModel semanticModel, TypeSyntax type) =>
+            semanticModel.GetSymbolInfo(type).Symbol as INamedTypeSymbol;
 
         // For normal methods
         private bool HasMatchingParameters(IMethodSymbol method, SeparatedSyntaxList<ArgumentSyntax> argumentList, ArgumentSyntax argument, TypeArgumentListSyntax typeArguments, out IParameterSymbol matchingParameter)
