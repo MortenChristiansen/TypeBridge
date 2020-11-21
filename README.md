@@ -25,7 +25,6 @@ which I have currently identified as reasonable for the library to have.
 - [ ] Map properties where source type has implicit conversion to destination type
 - [ ] Map properties where source type has explicit conversion to destination type
 - [x] Map properties where source type is subtype of destination
-- [ ] Map properties where source type is subtype of and destination is an abstract class
 - [x] Map properties where destination type is interface which source type implements
 - [x] Support mapping from a type with more fields than the recipient
 - [ ] Verify that different mappings will not clash or cause ambiguities
@@ -74,3 +73,7 @@ Mapping to values in tuple types is particularly complex, so it is unlikely to m
 Mapping to and from interface types is not supported, since C# does not allow you to implement custom
 convertions for interfaces in either direction. This limitation is specific to the root type being
 mapped, not the properties of child objects.
+
+Mapping to abstract types is not directly supported. You can work around this by mapping to a type
+having the desired base class somewhere else in your code. This mapping can also be used for the
+mapping to the abstract class.

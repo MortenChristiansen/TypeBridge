@@ -46,7 +46,7 @@ namespace MappingGenerator.Sample
         }
     }
 
-    public class BaseA
+    public abstract class BaseA
     {
         public int Age { get; set; }
     }

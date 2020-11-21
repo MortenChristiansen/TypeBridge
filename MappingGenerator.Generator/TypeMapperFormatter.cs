@@ -48,6 +48,9 @@ $@"public static implicit operator {destinationType.GetQualifiedName()}({_source
         {
             //System.Diagnostics.Debugger.Launch();
 
+            if (destinationType.IsAbstract)
+                return false;
+
             if (IsAssignable(_sourceType, destinationType))
                 return true;
 
