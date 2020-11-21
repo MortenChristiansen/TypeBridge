@@ -70,25 +70,9 @@ namespace MappingGenerator.Generator
                         {
                             Parent: InvocationExpressionSyntax
                             {
-                                Expression: MemberAccessExpressionSyntax
-                                {
-                                    Expression: IdentifierNameSyntax
-                                    {
-
-                                    } methodOwner,
-                                    Name: IdentifierNameSyntax
-                                    {
-                                        Identifier:
-                                        {
-                                            
-                                        } methodName
-                                    }
-                                }
+                                Expression: MemberAccessExpressionSyntax { Expression: IdentifierNameSyntax {} methodOwner, Name: IdentifierNameSyntax { Identifier: {} methodName } }
                             },
-                            Arguments:
-                            {
-                              
-                            } methodArguments
+                            Arguments: {} methodArguments
                         }
                     } methodArgument)
                 {
@@ -106,17 +90,8 @@ namespace MappingGenerator.Generator
                     {
                         Parent: ArgumentListSyntax
                         {
-                            Parent: ObjectCreationExpressionSyntax
-                            {
-                                Type: TypeSyntax
-                                {
-
-                                } constructedType
-                            },
-                            Arguments:
-                            {
-
-                            } arguments
+                            Parent: ObjectCreationExpressionSyntax { Type: TypeSyntax {} constructedType },
+                            Arguments: {} arguments
                         }
                     } constructorArgument)
                 {
@@ -138,27 +113,11 @@ namespace MappingGenerator.Generator
                             {
                                 Expression: MemberAccessExpressionSyntax
                                 {
-                                    Expression: IdentifierNameSyntax
-                                    {
-
-                                    } genericMethodOwner,
-                                    Name: GenericNameSyntax
-                                    {
-                                        Identifier: SyntaxToken
-                                        {
-
-                                        } genericMethodName,
-                                        TypeArgumentList: TypeArgumentListSyntax
-                                        {
-
-                                        } typeArguments
-                                    }
+                                    Expression: IdentifierNameSyntax {} genericMethodOwner,
+                                    Name: GenericNameSyntax { Identifier: SyntaxToken {} genericMethodName, TypeArgumentList: TypeArgumentListSyntax {} typeArguments }
                                 }
                             },
-                            Arguments:
-                            {
-
-                            } genericArguments
+                            Arguments: {} genericArguments
                         }
                     } genericArgument)
                 {
@@ -167,7 +126,7 @@ namespace MappingGenerator.Generator
                         continue;
 
                     destinationType = parameter.Type;
-                    if (destinationType is null || foundTypes.Contains((sourceType, destinationType)))
+                    if (destinationType is null || foundTypes.Contains((sourceType, destinationType)) || destinationType.TypeKind == TypeKind.TypeParameter)
                         continue;
                 }
 

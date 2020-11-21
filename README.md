@@ -13,10 +13,10 @@ which I have currently identified as reasonable for the library to have.
 - [x] `a.B = c.Map(); // Property assignment`
 - [x] `Process(a.Map()); // Method argument`
 - [x] `new B(a.Map()); // Constructor argument`
-- [ ] `new B<T>(a.Map(), t); // Mapping to a non-generic constructor argument`
-- [ ] `new B<T>(a.Map()); // Mapping to a generic constructor argument`
-- [x] `Process<T>(a.Map(), t); // Mapping to a non-generic type`
-- [ ] `Process<T>(a.Map()); // Mapping to type T`
+- [x] `new B<int>(a.Map(), 1); // Mapping to a non-generic constructor argument`
+- [x] `new B<A>(a.Map()); // Mapping to a generic constructor argument`
+- [x] `Process<int>(a.Map(), 1); // Mapping to a non-generic type`
+- [ ] `Process<A>(a.Map()); // Mapping to generic type`
 - [x] `_a = b.Map(); // Member assignment`
 - [x] `var v = new B { CValue = a.Map() }; // Object initializers`
 - [ ] Handle destination types without a public default constructor

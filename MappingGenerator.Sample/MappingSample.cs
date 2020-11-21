@@ -17,12 +17,13 @@ namespace MappingGenerator.Sample
             //var c = new C();
             //var a = new A();
             //c.BValue = a.Map();
-            //var b1 = new B();
+            var b1 = new B();
             //A a2 = b.Map();
             var b2 = new B();
+            //var f = new F<A>(b2.Map());
             //B b3 = b2.Map();
             //AProperty = b2.Map();
-            //b1.DoStuff(b2.Map(), 9);
+            b1.DoStuff<A>(b2.Map());
             //b1.DoThing(b2.Map());
             //(A, B) gg = (b1.Map(), b2);
 
@@ -31,7 +32,7 @@ namespace MappingGenerator.Sample
             //    AValue = b2.Map()
             //};
 
-            var d2 = new C(b2.Map());
+            //var d2 = new C(b2.Map());
         }
     }
 
@@ -55,6 +56,11 @@ namespace MappingGenerator.Sample
         {
 
         }
+
+        public void DoStuff<T>(T x)
+        {
+
+        }
     }
 
     public class C
@@ -71,6 +77,19 @@ namespace MappingGenerator.Sample
         {
             AValue = a;
             BValue = b;
+        }
+    }
+
+    public class F<T>
+    {
+        public F(T t)
+        {
+
+        }
+
+        public F(A a, T t)
+        {
+
         }
     }
 }
