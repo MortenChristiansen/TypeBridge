@@ -38,15 +38,56 @@ namespace MappingGenerator.Sample
             //G g = c.Map();
             //A a1 = new A();
             //var b = new B();
-            //A a2 = a1.Map();
+            //A a = b.Map();
+
+            //var bList = new List<B>();
+            //var gg = new GG();
+            //List<A> aList = bList.Map();
+            //IEnumerable<A> bList = gg.Map(bs); //(IEnumerable<A>)new List<B_Mapper>();
+
+            var m1 = new M11();
+            M22 m2 = m1.Map();
 
 
             //BaseA a3 = b.Map();
             //A a = b.Map();
 
-            var g = new G();
-            C c = g.Map();
+            //var g = new G();
+            //C c = g.Map();
         }
+    }
+
+    //class GG
+    //{
+    //    public static implicit operator List<B_Mapper>(List<B> bs)
+    //    {
+    //        var mappers = new List<B_Mapper>();
+    //        foreach (var b in bs)
+    //        {
+    //            mappers.Add(b.Map());
+    //        }
+    //        return mappers;
+    //    }
+    //}
+
+    public class M1
+    {
+        public List<A> Items { get; set; }
+    }
+
+    public class M2
+    {
+        public List<B> Items { get; set; }
+    }
+
+    public class M11
+    {
+        public List<M1> Items { get; set; }
+    }
+
+    public class M22
+    {
+        public List<M2> Items { get; set; }
     }
 
     public abstract class BaseA

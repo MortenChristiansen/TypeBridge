@@ -22,12 +22,14 @@ which I have currently identified as reasonable for the library to have.
 - [ ] Handle destination types without a public default constructor
 - [x] Recursively map complex types
 - [ ] Map collections
+- [x] Map List<T> properties
+- [ ] Map IEnumerable<T> properties
+- [ ] Map T[] properties
 - [ ] Map properties where source type has implicit conversion to destination type
 - [ ] Map properties where source type has explicit conversion to destination type
 - [x] Map properties where source type is subtype of destination
 - [x] Map properties where destination type is interface which source type implements
 - [x] Support mapping from a type with more fields than the recipient
-- [ ] Verify that different mappings will not clash or cause ambiguities
 - [ ] Extending the source type with other types, merging the properties into the resulting output
 - [ ] Support mapping to and from records
 
@@ -78,3 +80,6 @@ mapped, not the properties of child objects.
 Mapping to abstract types is not directly supported. You can work around this by mapping to a type
 having the desired base class somewhere else in your code. This mapping can also be used for the
 mapping to the abstract class.
+
+Mapping of non-generic collections is not supported since there is no way to know that the actual
+types of the objects are.

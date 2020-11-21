@@ -36,12 +36,36 @@ namespace MappingGenerator.Generator
             if (IsAssignable(sourceType, destinationType))
                 return true;
 
+            if (TryGetListType(sourceType, out var sourceListType) && TryGetListType(destinationType, out var destinationListType))
+            {
+                var sourceElementType = sourceListType.TypeArguments[0];
+                var destinationElementType = destinationListType.TypeArguments[0];
+                if (IsMappable(sourceElementType, destinationElementType))
+                    return true;
+
+                return false;
+            }
+
             var sourceProperties = GetPropertiesRecursively(sourceType);
             var destinationProperties = GetPropertiesRecursively(destinationType);
             if (destinationProperties.Count > sourceProperties.Count)
                 return false;
 
             return destinationProperties.All(d => sourceProperties.Any(s => d.Name == s.Name && IsMappable(s.Type, d.Type)));
+        }
+
+        private bool TryGetListType(ITypeSymbol type, out INamedTypeSymbol listType)
+        {
+            if (type.Name == "List" && type is INamedTypeSymbol list && list.TypeArguments.Length == 1)
+            {
+                listType = list;
+                return true;
+            }
+            else
+            {
+                listType = null;
+                return false;
+            }
         }
 
         private bool IsAssignable(ITypeSymbol source, ITypeSymbol destination)
@@ -73,7 +97,7 @@ $@"sealed class {_sourceType.Name}_Mapper
 
         private string FormatImplicitOperator(ITypeSymbol sourceType, ITypeSymbol destinationType) =>
 $@"public static implicit operator {destinationType.GetQualifiedName()}({sourceType.Name}_Mapper m) =>
-{FormatMapping("m._source", sourceType, destinationType)};";
+{FormatMapping("m._source", sourceType, destinationType, 1)};";
 
         private List<IPropertySymbol> GetPropertiesRecursively(ITypeSymbol type)
         {
@@ -97,12 +121,20 @@ $@"public static implicit operator {destinationType.GetQualifiedName()}({sourceT
             return _properties[type];
         }
 
-        private string FormatMapping(string sourceName, ITypeSymbol sourceType, ITypeSymbol destinationType)
+        private string FormatMapping(string sourceName, ITypeSymbol sourceType, ITypeSymbol destinationType, int nextListNameNumber)
         {
             //System.Diagnostics.Debugger.Launch();
 
             if (IsAssignable(sourceType, destinationType))
                 return $"                {sourceName}";
+
+            if (TryGetListType(sourceType, out var sourceListType) && TryGetListType(destinationType, out var destinationListType))
+            {
+                var sourceElementType = sourceListType.TypeArguments[0];
+                var destinationElementType = destinationListType.TypeArguments[0];
+
+                return $"{sourceName}.Select(x{nextListNameNumber} => {FormatMapping($"x{(nextListNameNumber++)}", sourceElementType, destinationElementType, nextListNameNumber)}).ToList()";
+            }
 
             var sourceProperties = GetPropertiesRecursively(sourceType);
             var destinationProperties = GetPropertiesRecursively(destinationType);
@@ -110,16 +142,16 @@ $@"public static implicit operator {destinationType.GetQualifiedName()}({sourceT
             return
 $@"            new {destinationType.GetQualifiedName()}()
             {{
-                {string.Join($",{Environment.NewLine}                ", destinationProperties.Select(dp => FormatPropertyMapping(sourceName, sourceProperties.Single(sp => sp.Name == dp.Name).Type, dp)))}
+                {string.Join($",{Environment.NewLine}                ", destinationProperties.Select(dp => FormatPropertyMapping(sourceName, sourceProperties.Single(sp => sp.Name == dp.Name).Type, dp, nextListNameNumber)))}
             }}";
         }
 
-        private string FormatPropertyMapping(string sourceName, ITypeSymbol sourceType, IPropertySymbol destinationProperty)
+        private string FormatPropertyMapping(string sourceName, ITypeSymbol sourceType, IPropertySymbol destinationProperty, int nextListNameNumber)
         {
             if (IsAssignable(sourceType, destinationProperty.Type))
                 return $"{destinationProperty.Name} = {sourceName}.{destinationProperty.Name}";
 
-            return $"{destinationProperty.Name} = {FormatMapping($"{sourceName}.{destinationProperty.Name}", sourceType, destinationProperty.Type)}";
+            return $"{destinationProperty.Name} = {FormatMapping($"{sourceName}.{destinationProperty.Name}", sourceType, destinationProperty.Type, nextListNameNumber)}";
         }
     }
 }
