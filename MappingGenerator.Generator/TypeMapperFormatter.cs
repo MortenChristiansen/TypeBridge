@@ -47,11 +47,13 @@ $@"public static implicit operator {destinationType.GetQualifiedName()}({_source
         private bool CanMap(ITypeSymbol destinationType)
         {
             var destinationProperties = destinationType.GetMembers().OfType<IPropertySymbol>().ToList();
-            if (destinationProperties.Count != _sourceProperties.Count)
+            if (destinationProperties.Count > _sourceProperties.Count)
                 return false;
 
             // TODO: More robust implementation
-            return _sourceProperties.All(s => destinationProperties.Any(d => s.Name.Equals(d.Name, StringComparison.InvariantCultureIgnoreCase) && s.Type.Name == d.Type.Name));
+            
+            
+            return destinationProperties.All(d => _sourceProperties.Any(s => d.Name.Equals(s.Name, StringComparison.InvariantCultureIgnoreCase) && d.Type.GetHashCode() == s.Type.GetHashCode()));
         }
 
         private string FormatMapping(ITypeSymbol destinationType)

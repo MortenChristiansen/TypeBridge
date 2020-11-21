@@ -20,10 +20,10 @@ which I have currently identified as reasonable for the library to have.
 - [x] `_a = b.Map(); // Member assignment`
 - [x] `var v = new B { CValue = a.Map() }; // Object initializers`
 - [ ] Handle destination types without a public default constructor
-- [ ] Recursively map complex types (this will change the behavior of mapping a type to its own type to be a deep copy)
+- [ ] Recursively map complex types (simple pass-through if they are the same type?)
 - [ ] Map collections
 - [ ] Map properties that can implicitly be converted or is otherwise directly assignable without having the same type
-- [ ] Support mapping from a type with more fields than the recipient
+- [x] Support mapping from a type with more fields than the recipient
 - [ ] Handle non-writable properties in the destination and non-readable properties in the source
 - [ ] Verify that different mappings will not clash or cause ambiguities
 - [ ] Extending the source type with other types, merging the properties into the resulting output
@@ -31,11 +31,12 @@ which I have currently identified as reasonable for the library to have.
 ## Features
 
 This library grants all supported types a magical `Map` function which allows instances of the type
-to be converted to any type having exactly the same properties. The method will not exist until
-you type it out for the first time for a given source and destination type. If no implementation
-appears it means that no mapping could be made. This either means that the types do not support
-it, for example because they do not have the same properties or that the `Map` function has been
-used in an unsupported way. See Known Limitations for more info about the second case.
+to be converted to any type where each of the properties on the destination type can be matched by
+a property on the source type. A matching property with have the same name and type. The method will
+not exist until you type it out for the first time for a given source and destination type. If no
+implementation appears it means that no mapping could be made. This either means that the types do
+not support it, for example because they do not have the same properties or that the `Map` function
+has been used in an unsupported way. See Known Limitations for more info about the second case.
 
 Example use:
 
