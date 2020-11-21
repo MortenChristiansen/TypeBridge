@@ -39,6 +39,14 @@ namespace MappingGenerator.Generator
 
                 }
 
+                // Match "B<T> b = X"
+                if (syntaxNode.Parent is EqualsValueClauseSyntax { Parent: VariableDeclaratorSyntax { Parent: VariableDeclarationSyntax { Type: GenericNameSyntax { } genericType } } })
+                {
+                    PropertyAssignments.Add((source, genericType, SyntaxType.Default));
+                    return;
+
+                }
+
                 // Match "a.SomeMethod(X)"
                 if (syntaxNode.Parent is ArgumentSyntax {} argument)
                 {
