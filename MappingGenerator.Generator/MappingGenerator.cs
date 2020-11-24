@@ -16,20 +16,24 @@ namespace MappingGenerator.Generator
                 throw new InvalidOperationException("Wrong syntax receiver");
             }
 
+            //System.Diagnostics.Debugger.Launch();
+
             var argumentsToValidate = syntaxReceiver.PropertyAssignments;
-            var mappingInfos = GetMappingInfo(context.Compilation, argumentsToValidate);
+            var extensions = syntaxReceiver.Extensions;
+
+            var mappingInfos = GetMappingInfo(context.Compilation, argumentsToValidate, extensions);
             var mappingInfoByType = mappingInfos.GroupBy(m => m.SourceType); // TODO: More robust grouping
             foreach (var m in mappingInfoByType)
             {
                 var formatter = new TypeMapperFormatter(m.Key);
                 foreach (var mappingInfo in m)
-                    formatter.AddDestinationType(mappingInfo.DestinationType);
+                    formatter.AddDestinationType(mappingInfo.DestinationType, mappingInfo.Extensions);
 
                 if (formatter.HasMappings)
                 {
                     var mapper = formatter.Format();
-                    var extensions = MapExtensionFormatter.Format(m.Key);
-                    var combined = NamespaceFormatter.Format(m.Key.GetNamespace(), mapper) + Environment.NewLine + Environment.NewLine + extensions;
+                    var extensionClass = MapExtensionFormatter.Format(m.Key);
+                    var combined = NamespaceFormatter.Format(m.Key.GetNamespace(), mapper) + Environment.NewLine + Environment.NewLine + extensionClass;
                     context.AddSource($"{m.Key.Name}_Mapper.cs", combined);
                 }
                 //System.Diagnostics.Debugger.Launch();
@@ -41,7 +45,7 @@ namespace MappingGenerator.Generator
             context.RegisterForSyntaxNotifications(() => new SyntaxReceiver());
         }
 
-        private IEnumerable<MappingInfo> GetMappingInfo(Compilation compilation, List<(SyntaxNode Source, SyntaxNode DestinationInstance, SyntaxType Type)> args)
+        private IEnumerable<MappingInfo> GetMappingInfo(Compilation compilation, List<(SyntaxNode Source, SyntaxNode DestinationInstance, ReceivedSyntaxType Type)> args, List<(SyntaxNode Source, List<ArgumentSyntax> Extensions)> extensions)
         {
             var foundTypes = new HashSet<(ITypeSymbol Source, ITypeSymbol Destination)>();
 
@@ -55,8 +59,11 @@ namespace MappingGenerator.Generator
                 if (sourceType is null)
                     continue;
 
+                var extension = extensions.Find(e => e.Source == source);
+                var extensionTypes = extension == default ? new ITypeSymbol[0] : extension.Extensions.Select(e => MatchArgumentType(semanticModel, e)).Where(t => t != null).ToArray();
+
                 ITypeSymbol destinationType = null;
-                if (type == SyntaxType.Default)
+                if (type == ReceivedSyntaxType.Default)
                 {
                     destinationType = semanticModel.GetTypeInfo(destination).Type;
                     if (destinationType is null || foundTypes.Contains((sourceType, destinationType)))
@@ -64,7 +71,7 @@ namespace MappingGenerator.Generator
                 }
 
                 // Normal method
-                if (type == SyntaxType.MethodArgument && destination is ArgumentSyntax
+                if (type == ReceivedSyntaxType.MethodArgument && destination is ArgumentSyntax
                     {
                         Parent: ArgumentListSyntax
                         {
@@ -86,7 +93,7 @@ namespace MappingGenerator.Generator
                 }
 
                 // Constructor method
-                if (type == SyntaxType.MethodArgument && destination is ArgumentSyntax
+                if (type == ReceivedSyntaxType.MethodArgument && destination is ArgumentSyntax
                     {
                         Parent: ArgumentListSyntax
                         {
@@ -105,7 +112,7 @@ namespace MappingGenerator.Generator
                 }
 
                 // Generic method
-                if (type == SyntaxType.MethodArgument && destination is ArgumentSyntax
+                if (type == ReceivedSyntaxType.MethodArgument && destination is ArgumentSyntax
                     {
                         Parent: ArgumentListSyntax
                         {
@@ -150,9 +157,28 @@ namespace MappingGenerator.Generator
                 if (destinationType != null)
                 {
                     foundTypes.Add((sourceType, destinationType));
-                    yield return new MappingInfo { SourceType = sourceType, DestinationType = destinationType };
+                    yield return new MappingInfo { SourceType = sourceType, DestinationType = destinationType, Extensions = extensionTypes };
                 }
             }
+        }
+
+        private ITypeSymbol MatchArgumentType(SemanticModel semanticModel, ArgumentSyntax argument)
+        {
+            // TODO: More flexibility in argument expressions matched
+
+            //System.Diagnostics.Debugger.Launch();
+
+            return argument switch
+            {
+                {
+                    Expression: IdentifierNameSyntax
+                    {
+
+                    } identifier
+                } => semanticModel.GetTypeInfo(identifier).Type,
+
+                _ => null
+            };
         }
 
         private IParameterSymbol GetParameter(

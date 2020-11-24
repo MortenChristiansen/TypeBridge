@@ -14,61 +14,82 @@ namespace MappingGenerator.Sample
 
         public void Sample()
         {
-            //var c = new C();
-            //var a = new A();
-            //c.BValue = a.Map();
-            //var b1 = new B();
-            //A a2 = b.Map();
-            //var b2 = new B();
-            //var f = new F<A>(b2.Map());
-            //B b3 = b2.Map();
-            //AProperty = b2.Map();
-            //b1.DoStuff<A>(b2.Map());
-            //b1.DoThing(b2.Map());
-            //(A, B) gg = (b1.Map(), b2);
+            // Property assignment
+            var c1 = new C();
+            var a1 = new A();
+            c1.BValue = a1.Map();
 
-            //var d = new Other.D
-            //{
-            //    AValue = b2.Map()
-            //};
+            // Variable assignment
+            var b2 = new B();
+            A a2 = b2.Map();
 
-            //var d2 = new C(b2.Map());
+            // Generic constructors
+            var b3 = new B();
+            var f3 = new F<A>(b3.Map());
 
-            //var c = new C(new A());
-            //G g = c.Map();
-            //A a1 = new A();
-            //var b = new B();
-            //A a = b.Map();
+            // Property assignments
+            AProperty = b3.Map();
 
-            //var bList = new List<B>();
-            //var gg = new GG();
-            //List<A> aList = bList.Map();
-            //IEnumerable<A> bList = gg.Map(bs); //(IEnumerable<A>)new List<B_Mapper>();
+            // Generic methods
+            var b4 = new B();
+            b4.DoStuff<A>(b2.Map());
+            b4.DoThing(b2.Map());
+            
+            // Object initializers
+            var d5 = new Other.D
+            {
+                AValue = b2.Map()
+            };
 
+            // Constructor arguments
+            var d6 = new C(b2.Map());
+
+            // Nested types, directly assignable
+            var c7 = new C(new A());
+            G g7 = c7.Map();
+            A a7 = new A();
+
+            // Mapping collections
             var m1 = new M11();
             M22 m2 = m1.Map();
 
+            // Map to base type
+            BaseA a8base = b3.Map();
 
-            //BaseA a3 = b.Map();
-            //A a = b.Map();
+            // Map nested types - both direct match and one requiring a mapping
+            var g9 = new G();
+            C c9 = g9.Map();
 
-            //var g = new G();
-            //C c = g.Map();
+            // Extension
+            var h10 = new H();
+            var k10 = new K();
+            A a10 = h10.Map().Extend(k10);
+            J j10 = h10.Map();
+
+            // Extend todo:
+            // - Anonymous types (if possible)
+            // - Simple types
+            // - Various expressions
+            // - Tuples
+            // - Match names in a case insensitive manner (seems relevant for Extend if we use anonymous types or tuples)
+            //      - Be aware that there was a reason I moved away from this
         }
     }
 
-    //class GG
-    //{
-    //    public static implicit operator List<B_Mapper>(List<B> bs)
-    //    {
-    //        var mappers = new List<B_Mapper>();
-    //        foreach (var b in bs)
-    //        {
-    //            mappers.Add(b.Map());
-    //        }
-    //        return mappers;
-    //    }
-    //}
+    public class H
+    {
+        public int Age { get; set; }
+    }
+
+    public class K
+    {
+        public string Name { get; set; }
+    }
+
+    public class J
+    {
+        public int Age { get; set; }
+    }
 
     public class M1
     {
@@ -191,16 +212,3 @@ namespace MappingGenerator.Other
         }
     }
 }
-
-//namespace MappingGenerator.Different
-//{
-//    public class E
-//    {
-//        public E()
-//        {
-//            Other.D d = new Other.D();
-//            Other.D d2 = new Other.D();
-//            d2.BValue = d.AValue.Map();
-//        }
-//    }
-//}

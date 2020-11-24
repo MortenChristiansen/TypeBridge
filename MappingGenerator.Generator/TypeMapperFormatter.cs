@@ -10,6 +10,7 @@ namespace MappingGenerator.Generator
         private readonly ITypeSymbol _sourceType;
         private readonly List<ITypeSymbol> _destinationTypes = new List<ITypeSymbol>();
         private Dictionary<ITypeSymbol, List<IPropertySymbol>> _properties = new Dictionary<ITypeSymbol, List<IPropertySymbol>>();
+        private List<(ITypeSymbol Destination, ITypeSymbol[] Extensions)> _extensionTypes = new List<(ITypeSymbol Destination, ITypeSymbol[] Extensions)>();
 
         public bool HasMappings => _destinationTypes.Count > 0;
 
@@ -18,19 +19,34 @@ namespace MappingGenerator.Generator
             _sourceType = sourceType;
         }
 
-        public TypeMapperFormatter AddDestinationType(ITypeSymbol type)
+        public TypeMapperFormatter AddDestinationType(ITypeSymbol type, ITypeSymbol[] extensionTypes)
         {
-            if (!_destinationTypes.Any(t => t.GetHashCode() == type.GetHashCode()) && IsMappable(_sourceType, type))
+            if (!_destinationTypes.Any(t => t.GetHashCode() == type.GetHashCode()) && IsMappable(_sourceType, type, extensionTypes))
                 _destinationTypes.Add(type);
+
+            if (extensionTypes.Length > 0 && !_extensionTypes.Any(e => IsSame(e.Extensions, extensionTypes)))
+                _extensionTypes.Add((type, extensionTypes));
 
             return this;
         }
 
-        // IArrayTypeSymbol
-
-        private bool IsMappable(ITypeSymbol sourceType, ITypeSymbol destinationType)
+        public bool IsSame(ITypeSymbol[] types1, ITypeSymbol[] types2)
         {
-           // System.Diagnostics.Debugger.Launch();
+            if (types1.Length != types2.Length)
+                return false;
+
+            for (int i = 0; i < types1.Length; i++)
+            {
+                if (types1[i].GetHashCode() != types2[i].GetHashCode())
+                    return false;
+            }
+
+            return true;
+        }
+
+        private bool IsMappable(ITypeSymbol sourceType, ITypeSymbol destinationType, ITypeSymbol[] extensionTypes)
+        {
+            //System.Diagnostics.Debugger.Launch();
 
             if (destinationType.IsAbstract && destinationType.TypeKind == TypeKind.Class)
                 return false;
@@ -41,18 +57,18 @@ namespace MappingGenerator.Generator
             // Also suppor any combination of IEnumerable and List
             if (TryGetCollectionType(sourceType, out var sourceElementType, out var _) && TryGetCollectionType(destinationType, out var destinationElementType, out var _))
             {
-                if (IsMappable(sourceElementType, destinationElementType))
+                if (IsMappable(sourceElementType, destinationElementType, extensionTypes))
                     return true;
 
                 return false;
             }
 
-            var sourceProperties = GetPropertiesRecursively(sourceType);
+            var sourceProperties = GetCombinedSourceProperties("m._source", sourceType, extensionTypes);
             var destinationProperties = GetPropertiesRecursively(destinationType);
             if (destinationProperties.Count > sourceProperties.Count)
                 return false;
 
-            return destinationProperties.All(d => sourceProperties.Any(s => d.Name == s.Name && IsMappable(s.Type, d.Type)));
+            return destinationProperties.All(d => sourceProperties.Any(s => sourceProperties.ContainsKey(d.Name) && IsMappable(sourceProperties[d.Name].Type, d.Type, extensionTypes)));
         }
 
         private bool TryGetCollectionType(ITypeSymbol type, out ITypeSymbol elementType, out string postfix)
@@ -98,17 +114,49 @@ $@"sealed class {_sourceType.Name}_Mapper
     {{
         private readonly {_sourceType.Name} _source;
 
+        
         public {_sourceType.Name}_Mapper({_sourceType.Name} source)
         {{
             _source = source;
         }}
 
-        {string.Join(Environment.NewLine, _destinationTypes.Select(d => FormatImplicitOperator(_sourceType, d)))}
+        {FormatExtendMethods()}
+
+        {string.Join(Environment.NewLine, _destinationTypes.Where(d => IsMappable(_sourceType, d, new ITypeSymbol[0])).Select(d => FormatImplicitOperator($"{_sourceType.Name}_Mapper m", _sourceType, d, new ITypeSymbol[0])))}
+
+{string.Join(Environment.NewLine + Environment.NewLine, _extensionTypes.Select((e, i) => FormatExensionMapper(i+1, e.Extensions)))}
     }}";
 
-        private string FormatImplicitOperator(ITypeSymbol sourceType, ITypeSymbol destinationType) =>
-$@"public static implicit operator {destinationType.GetQualifiedName()}({sourceType.Name}_Mapper m) =>
-{FormatMapping("m._source", sourceType, destinationType, 1)};";
+        private string FormatExtendMethods()
+        {
+            // TODO: We need to implement the custom extension mapper classes
+
+            var methodComment =
+@"/// <summary>
+        /// Add additional source fields to the mapping. The properties for additional
+        /// extensions each add to the mapping potential. If multiple sources share a
+        /// property, the last extension will be the one which gets mapped for the
+        /// property.
+        /// </summary>
+        /// <param name=""value"">An additional object to map properties from</param>";
+
+            if (_extensionTypes.Count == 0)
+                return
+$@"{methodComment}
+        public {_sourceType.Name}_Mapper Extend(object value) =>
+            this;
+";
+
+            return string.Join(Environment.NewLine + Environment.NewLine, _extensionTypes.Select((t, i) =>
+$@"       {methodComment}
+        public {_sourceType.Name}_Mapper.Extension{i+1} Extend({string.Join(", ", t.Extensions.Select((v, i2) => $"{v.GetQualifiedName()} v{i2+1}"))}) =>
+            new {_sourceType.Name}_Mapper.Extension{i + 1}(_source, {string.Join(", ", t.Extensions.Select((_, i2) => $"v{i2 + 1}"))});
+"));
+        }
+
+        private string FormatImplicitOperator(string mapperTypeName, ITypeSymbol sourceType, ITypeSymbol destinationType, ITypeSymbol[] extensions) =>
+$@"public static implicit operator {destinationType.GetQualifiedName()}({mapperTypeName}) =>
+{FormatMapping("m._source", sourceType, destinationType, 1, extensions)};";
 
         private List<IPropertySymbol> GetPropertiesRecursively(ITypeSymbol type)
         {
@@ -132,7 +180,7 @@ $@"public static implicit operator {destinationType.GetQualifiedName()}({sourceT
             return _properties[type];
         }
 
-        private string FormatMapping(string sourceName, ITypeSymbol sourceType, ITypeSymbol destinationType, int nextListNameNumber)
+        private string FormatMapping(string sourceName, ITypeSymbol sourceType, ITypeSymbol destinationType, int nextListNameNumber, ITypeSymbol[] extensions)
         {
             //System.Diagnostics.Debugger.Launch();
 
@@ -141,25 +189,54 @@ $@"public static implicit operator {destinationType.GetQualifiedName()}({sourceT
 
             if (TryGetCollectionType(sourceType, out var sourceElementType, out var _) && TryGetCollectionType(destinationType, out var destinationElementType, out var postfix))
             {
-                return $"{sourceName}.Select(x{nextListNameNumber} => {FormatMapping($"x{nextListNameNumber++}", sourceElementType, destinationElementType, nextListNameNumber)}){postfix}";
+                return $"{sourceName}.Select(x{nextListNameNumber} => {FormatMapping($"x{nextListNameNumber++}", sourceElementType, destinationElementType, nextListNameNumber, extensions)}){postfix}";
             }
 
-            var sourceProperties = GetPropertiesRecursively(sourceType);
+            var sourceProperties = GetCombinedSourceProperties(sourceName, sourceType, extensions);
             var destinationProperties = GetPropertiesRecursively(destinationType);
 
             return
 $@"            new {destinationType.GetQualifiedName()}()
             {{
-                {string.Join($",{Environment.NewLine}                ", destinationProperties.Select(dp => FormatPropertyMapping(sourceName, sourceProperties.Single(sp => sp.Name == dp.Name).Type, dp, nextListNameNumber)))}
+                {string.Join($",{Environment.NewLine}                ", destinationProperties.Select(dp => FormatPropertyMapping(sourceProperties[dp.Name], dp, nextListNameNumber, extensions)))}
             }}";
         }
 
-        private string FormatPropertyMapping(string sourceName, ITypeSymbol sourceType, IPropertySymbol destinationProperty, int nextListNameNumber)
+        private Dictionary<string, (ITypeSymbol Type, string Source)> GetCombinedSourceProperties(string sourceName, ITypeSymbol sourceType, ITypeSymbol[] extensions)
         {
-            if (IsAssignable(sourceType, destinationProperty.Type))
-                return $"{destinationProperty.Name} = {sourceName}.{destinationProperty.Name}";
+            var sourceProperties = GetPropertiesRecursively(sourceType).ToDictionary(p => p.Name, p => (p.Type , sourceName));
+            for (var i = 0; i < extensions.Length; i++)
+            {
+                foreach (var property in GetPropertiesRecursively(extensions[i]))
+                {
+                    sourceProperties[property.Name] = (property.Type, $"m._extensionSource{i+1}");
+                }
+            }
 
-            return $"{destinationProperty.Name} = {FormatMapping($"{sourceName}.{destinationProperty.Name}", sourceType, destinationProperty.Type, nextListNameNumber)}";
+            return sourceProperties;
         }
+
+        private string FormatPropertyMapping((ITypeSymbol Type, string Source) sourceType, IPropertySymbol destinationProperty, int nextListNameNumber, ITypeSymbol[] extensions)
+        {
+            if (IsAssignable(sourceType.Type, destinationProperty.Type))
+                return $"{destinationProperty.Name} = {sourceType.Source}.{destinationProperty.Name}";
+
+            return $"{destinationProperty.Name} = {FormatMapping($"{sourceType.Source}.{destinationProperty.Name}", sourceType.Type, destinationProperty.Type, nextListNameNumber, extensions)}";
+        }
+
+        private string FormatExensionMapper(int extensionNumber, ITypeSymbol[] extensionTypes) =>
+$@"public sealed class Extension{extensionNumber}
+    {{
+        private readonly {_sourceType.Name} _source;
+{string.Join($"{Environment.NewLine}", extensionTypes.Select((e, i) => $"        private readonly {e.GetQualifiedName()} _extensionSource{i + 1};"))}
+        
+        public Extension{extensionNumber}({_sourceType.Name} source, {string.Join($", ", extensionTypes.Select((e, i) => $"{e.GetQualifiedName()} ext{i + 1}"))})
+        {{
+            _source = source;
+{string.Join($"{Environment.NewLine}", extensionTypes.Select((e, i) => $"           _extensionSource{i + 1} = ext{i + 1};"))}
+        }}
+
+        {string.Join(Environment.NewLine, _destinationTypes.Select(d => FormatImplicitOperator($"{_sourceType.Name}_Mapper.Extension{extensionNumber} m", _sourceType, d, extensionTypes)))}
+    }}";
     }
 }

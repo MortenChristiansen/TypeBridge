@@ -30,8 +30,10 @@ which I have currently identified as reasonable for the library to have.
 - [x] Map properties where source type is subtype of destination
 - [x] Map properties where destination type is interface which source type implements
 - [x] Support mapping from a type with more fields than the recipient
-- [ ] Extending the source type with other types, merging the properties into the resulting output
+- [x] Extending the source type with other types, merging the properties into the resulting output
+- [ ] More flexibility in accepting Extend arguments
 - [ ] Support mapping to and from records
+- [ ] Handle recursive types
 
 ## Features
 
