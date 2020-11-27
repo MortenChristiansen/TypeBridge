@@ -44,8 +44,12 @@ namespace MappingGenerator.Generator
             return true;
         }
 
-        private bool IsMappable(ITypeSymbol sourceType, ITypeSymbol destinationType, ITypeSymbol[] extensionTypes)
+        private bool IsMappable(ITypeSymbol sourceType, ITypeSymbol destinationType, ITypeSymbol[] extensionTypes, int level = 1)
         {
+            // Simple recursion guard
+            if (level > 10) // TODO: Make more intelligent recursion guard
+                return false;
+
             //System.Diagnostics.Debugger.Launch();
 
             if (destinationType.IsAbstract && destinationType.TypeKind == TypeKind.Class)
@@ -57,7 +61,7 @@ namespace MappingGenerator.Generator
             // Also suppor any combination of IEnumerable and List
             if (TryGetCollectionType(sourceType, out var sourceElementType, out var _) && TryGetCollectionType(destinationType, out var destinationElementType, out var _))
             {
-                if (IsMappable(sourceElementType, destinationElementType, extensionTypes))
+                if (IsMappable(sourceElementType, destinationElementType, extensionTypes, level + 1))
                     return true;
 
                 return false;
@@ -68,7 +72,7 @@ namespace MappingGenerator.Generator
             if (destinationProperties.Count > sourceProperties.Count)
                 return false;
 
-            return destinationProperties.All(d => sourceProperties.Any(s => sourceProperties.ContainsKey(d.Name) && IsMappable(sourceProperties[d.Name].Type, d.Type, extensionTypes)));
+            return destinationProperties.All(d => sourceProperties.Any(s => sourceProperties.ContainsKey(d.Name) && IsMappable(sourceProperties[d.Name].Type, d.Type, extensionTypes, level + 1)));
         }
 
         private bool TryGetCollectionType(ITypeSymbol type, out ITypeSymbol elementType, out string postfix)
