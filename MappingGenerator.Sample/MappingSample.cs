@@ -14,65 +14,57 @@ namespace MappingGenerator.Sample
 
         public void Sample()
         {
-            // Property assignment
-            var c1 = new C();
-            var a1 = new A();
-            c1.BValue = a1.Map();
+            //// Property assignment
+            //var c1 = new C();
+            //var a1 = new A();
+            //c1.BValue = a1.Map();
 
-            // Variable assignment
-            var b2 = new B();
-            A a2 = b2.Map();
+            //// Variable assignment
+            //var b2 = new B();
+            //A a2 = b2.Map();
 
-            // Generic constructors
-            var b3 = new B();
-            var f3 = new F<A>(b3.Map());
+            //// Generic constructors
+            //var b3 = new B();
+            //var f3 = new F<A>(b3.Map());
 
-            // Property assignments
-            AProperty = b3.Map();
+            //// Property assignments
+            //AProperty = b3.Map();
 
-            // Generic methods
-            var b4 = new B();
-            b4.DoStuff<A>(b2.Map());
-            b4.DoThing(b2.Map());
+            //// Generic methods
+            //var b4 = new B();
+            //b4.DoStuff<A>(b2.Map());
+            //b4.DoThing(b2.Map());
             
-            // Object initializers
-            var d5 = new Other.D
-            {
-                AValue = b2.Map()
-            };
+            //// Object initializers
+            //var d5 = new Other.D
+            //{
+            //    AValue = b2.Map()
+            //};
 
-            // Constructor arguments
-            var d6 = new C(b2.Map());
+            //// Constructor arguments
+            //var d6 = new C(b2.Map());
 
-            // Nested types, directly assignable
-            var c7 = new C(new A());
-            G g7 = c7.Map();
-            A a7 = new A();
+            //// Nested types, directly assignable
+            //var c7 = new C(new A());
+            //G g7 = c7.Map();
+            //A a7 = new A();
 
-            // Mapping collections
-            var m1 = new M11();
-            M22 m2 = m1.Map();
+            //// Mapping collections
+            //var m1 = new M11();
+            //M22 m2 = m1.Map();
 
-            // Map to base type
-            BaseA a8base = b3.Map();
+            //// Map to base type
+            //BaseA a8base = b3.Map();
 
-            // Map nested types - both direct match and one requiring a mapping
-            var g9 = new G();
-            C c9 = g9.Map();
+            //// Map nested types - both direct match and one requiring a mapping
+            //var g9 = new G();
+            //C c9 = g9.Map();
 
             // Extension
             var h10 = new H();
             var k10 = new K();
-            A a10 = h10.Map().Extend(k10);
-            J j10 = h10.Map();
-
-            // Extend todo:
-            // - Anonymous types (if possible)
-            // - Simple types
-            // - Various expressions
-            // - Tuples
-            // - Match names in a case insensitive manner (seems relevant for Extend if we use anonymous types or tuples)
-            //      - Be aware that there was a reason I moved away from this
+            A a10 = h10.Map().Extend(new K());
+            //J j10 = h10.Map();
         }
     }
 

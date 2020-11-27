@@ -168,14 +168,20 @@ namespace MappingGenerator.Generator
 
             //System.Diagnostics.Debugger.Launch();
 
-            return argument switch
+            return argument.Expression switch
             {
+                IdentifierNameSyntax
                 {
-                    Expression: IdentifierNameSyntax
+
+                } identifier => semanticModel.GetTypeInfo(identifier).Type,
+
+                ObjectCreationExpressionSyntax
+                {
+                    Type: IdentifierNameSyntax
                     {
 
-                    } identifier
-                } => semanticModel.GetTypeInfo(identifier).Type,
+                    } identifier2
+                } => semanticModel.GetSymbolInfo(identifier2).Symbol as ITypeSymbol,
 
                 _ => null
             };

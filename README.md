@@ -87,3 +87,5 @@ Mapping of non-generic collections is not supported since there is no way to kno
 types of the objects are.
 
 Mapping of multidimensional arrays are consided too niche a use case and is therefore not supported.
+
+Anonymous types are not support, neither for the `Map` nor the `Extend` method.

@@ -129,7 +129,7 @@ $@"sealed class {_sourceType.Name}_Mapper
 
         private string FormatExtendMethods()
         {
-            // TODO: We need to implement the custom extension mapper classes
+            //System.Diagnostics.Debugger.Launch();
 
             var methodComment =
 @"/// <summary>
