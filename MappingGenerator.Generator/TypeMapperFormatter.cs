@@ -116,10 +116,9 @@ namespace MappingGenerator.Generator
         public string Format() =>
 $@"sealed class {_sourceType.Name}_Mapper
     {{
-        private readonly {_sourceType.Name} _source;
+        private readonly {_sourceType.ToDisplayString()} _source;
 
-        
-        public {_sourceType.Name}_Mapper({_sourceType.Name} source)
+        public {_sourceType.Name}_Mapper({_sourceType.ToDisplayString()} source)
         {{
             _source = source;
         }}
@@ -159,7 +158,7 @@ $@"       {methodComment}
         }
 
         private string FormatImplicitOperator(string mapperTypeName, ITypeSymbol sourceType, ITypeSymbol destinationType, ITypeSymbol[] extensions) =>
-$@"public static implicit operator {destinationType.GetQualifiedName()}({mapperTypeName}) =>
+$@"public static implicit operator {destinationType.ToDisplayString()}({mapperTypeName}) =>
 {FormatMapping("m._source", sourceType, destinationType, 1, extensions)};";
 
         private List<IPropertySymbol> GetPropertiesRecursively(ITypeSymbol type)
@@ -200,7 +199,7 @@ $@"public static implicit operator {destinationType.GetQualifiedName()}({mapperT
             var destinationProperties = GetPropertiesRecursively(destinationType);
 
             return
-$@"            new {destinationType.GetQualifiedName()}()
+$@"            new {destinationType.ToDisplayString()}()
             {{
                 {string.Join($",{Environment.NewLine}                ", destinationProperties.Select(dp => FormatPropertyMapping(sourceProperties[dp.Name], dp, nextListNameNumber, extensions)))}
             }}";

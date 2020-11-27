@@ -35,8 +35,8 @@ namespace MappingGenerator.Generator
                     var extensionClass = MapExtensionFormatter.Format(m.Key);
                     var combined = NamespaceFormatter.Format(m.Key.GetNamespace(), mapper) + Environment.NewLine + Environment.NewLine + extensionClass;
                     context.AddSource($"{m.Key.Name}_Mapper.cs", combined);
+                    //System.Diagnostics.Debugger.Launch();
                 }
-                //System.Diagnostics.Debugger.Launch();
             }
         }
 
