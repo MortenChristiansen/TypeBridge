@@ -9,6 +9,8 @@ This library is very new and as such lacks many essential features and will most
 spectacularly if used in anything resembling production. The below list enumerates the features
 which I have currently identified as reasonable for the library to have.
 
+### Version 1.0
+
 - [x] `B b = a.Map(); // Variable assignment`
 - [x] `a.B = c.Map(); // Property assignment`
 - [x] `Process(a.Map()); // Method argument`
@@ -19,20 +21,23 @@ which I have currently identified as reasonable for the library to have.
 - [x] `Process<A>(a.Map()); // Mapping to generic type`
 - [x] `_a = b.Map(); // Member assignment`
 - [x] `var v = new B { CValue = a.Map() }; // Object initializers`
-- [ ] Handle destination types without a public default constructor
 - [x] Recursively map complex types
-- [ ] Map collections
 - [x] Map List<T> properties
 - [x] Map IEnumerable<T> properties
 - [x] Map T[] properties
-- [ ] Map properties where source type has implicit conversion to destination type
-- [ ] Map properties where source type has explicit conversion to destination type
 - [x] Map properties where source type is subtype of destination
 - [x] Map properties where destination type is interface which source type implements
 - [x] Support mapping from a type with more fields than the recipient
 - [x] Extending the source type with other types, merging the properties into the resulting output
-- [ ] Support mapping to and from records
 - [x] Prevent error on recursion
+
+### Version 1.1
+
+- [ ] Handle destination types without a public default constructor
+- [ ] Map collections
+- [ ] Map properties where source type has implicit conversion to destination type
+- [ ] Map properties where source type has explicit conversion to destination type
+- [ ] Support mapping to and from records
 
 ## Features
 
