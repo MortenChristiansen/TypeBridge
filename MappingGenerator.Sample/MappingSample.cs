@@ -63,9 +63,12 @@ namespace MappingGenerator.Sample
             // Extension
             var h10 = new H();
             var k10 = new K();
-            A a10 = h10.Map().Extend(new K());
+            A a10 = h10.Map().Extend(Fun());
             //J j10 = h10.Map();
         }
+
+        private K Fun() =>
+            default;
     }
 
     public class H

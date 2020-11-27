@@ -164,8 +164,6 @@ namespace MappingGenerator.Generator
 
         private ITypeSymbol MatchArgumentType(SemanticModel semanticModel, ArgumentSyntax argument)
         {
-            // TODO: More flexibility in argument expressions matched
-
             //System.Diagnostics.Debugger.Launch();
 
             return argument.Expression switch
@@ -173,15 +171,23 @@ namespace MappingGenerator.Generator
                 IdentifierNameSyntax
                 {
 
-                } identifier => semanticModel.GetTypeInfo(identifier).Type,
+                } variableName => semanticModel.GetTypeInfo(variableName).Type,
 
                 ObjectCreationExpressionSyntax
                 {
                     Type: IdentifierNameSyntax
                     {
 
-                    } identifier2
-                } => semanticModel.GetSymbolInfo(identifier2).Symbol as ITypeSymbol,
+                    } constructorName
+                } => semanticModel.GetSymbolInfo(constructorName).Symbol as ITypeSymbol,
+
+                InvocationExpressionSyntax
+                {
+                    Expression: IdentifierNameSyntax
+                    {
+
+                    } methodName
+                } => (semanticModel.GetSymbolInfo(methodName).Symbol as IMethodSymbol)?.ReturnType,
 
                 _ => null
             };
