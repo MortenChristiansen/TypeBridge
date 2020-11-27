@@ -12,6 +12,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "OtherFiles", "OtherFiles", 
 		README.md = README.md
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MappingGenerator.Test", "MappingGenerator.Test\MappingGenerator.Test.csproj", "{302DE914-7C6F-4280-8EF4-441B9345B437}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -26,6 +28,10 @@ Global
 		{7D1AD8F1-F9E9-4280-B8BD-7DEA5C0F78FE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7D1AD8F1-F9E9-4280-B8BD-7DEA5C0F78FE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7D1AD8F1-F9E9-4280-B8BD-7DEA5C0F78FE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{302DE914-7C6F-4280-8EF4-441B9345B437}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{302DE914-7C6F-4280-8EF4-441B9345B437}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{302DE914-7C6F-4280-8EF4-441B9345B437}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{302DE914-7C6F-4280-8EF4-441B9345B437}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
