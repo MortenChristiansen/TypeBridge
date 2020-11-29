@@ -1,0 +1,27 @@
+name: CI
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+      
+    - name: Setup .NET Core 5.0
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 5.0.100
+
+    - name: Publish NuGet
+      # brandedoutcast/publish-nuget@v2.5.5
+      uses: brandedoutcast/publish-nuget@c12b8546b67672ee38ac87bea491ac94a587f7cc
+      with:
+        # Filepath of the project to be packaged, relative to root of repository
+        PROJECT_FILE_PATH: TypeBridge.Generator/TypeBridge.Generator.csproj
+        # NuGet package id, used for version detection & defaults to project name
+        PACKAGE_NAME: TypeBridge
+        # API key to authenticate with NuGet server
+        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
