@@ -5,11 +5,13 @@ VisualStudioVersion = 16.0.30709.132
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TypeBridge.Sample", "TypeBridge.Sample\TypeBridge.Sample.csproj", "{E8CB1DD9-34F1-4B04-9D4A-64C85B370302}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TypeBridge.Generator", "TypeBridge.Generator\TypeBridge.Generator.csproj", "{7D1AD8F1-F9E9-4280-B8BD-7DEA5C0F78FE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TypeBridge", "TypeBridge\TypeBridge.csproj", "{7D1AD8F1-F9E9-4280-B8BD-7DEA5C0F78FE}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "OtherFiles", "OtherFiles", "{737E6893-525E-4E57-BA91-56C496B3325C}"
 	ProjectSection(SolutionItems) = preProject
 		.github\workflows\build.yml = .github\workflows\build.yml
+		CHANGELOG.md = CHANGELOG.md
+		.github\workflows\publish.yml = .github\workflows\publish.yml
 		README.md = README.md
 	EndProjectSection
 EndProject

@@ -1,4 +1,4 @@
-﻿namespace TypeBridge.Generator
+﻿namespace TypeBridge
 {
     enum ReceivedSyntaxType
     {

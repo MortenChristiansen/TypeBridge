@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace TypeBridge.Generator
+namespace TypeBridge
 {
     static class NamespaceFormatter
     {

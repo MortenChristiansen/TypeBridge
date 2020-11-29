@@ -1,7 +1,7 @@
 ﻿using Microsoft.CodeAnalysis;
 using System.Collections.Generic;
 
-namespace TypeBridge.Generator
+namespace TypeBridge
 {
     static class SyntaxExtensions
     {
