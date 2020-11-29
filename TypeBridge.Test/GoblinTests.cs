@@ -1,8 +1,8 @@
-using MappingGenerator.Test.TestMappingClasses;
+using TypeBridge.Test.TestMappingClasses;
 using System.Linq;
 using Xunit;
 
-namespace MappingGenerator.Test
+namespace TypeBridge.Test
 {
     public class GoblinTests
     {

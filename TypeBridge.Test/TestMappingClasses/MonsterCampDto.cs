@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace MappingGenerator.Test.TestMappingClasses
+namespace TypeBridge.Test.TestMappingClasses
 {
     class MonsterCampDto<TMonster>
     {

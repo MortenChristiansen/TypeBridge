@@ -1,4 +1,4 @@
-﻿namespace MappingGenerator.Generator
+﻿namespace TypeBridge.Generator
 {
     enum ReceivedSyntaxType
     {

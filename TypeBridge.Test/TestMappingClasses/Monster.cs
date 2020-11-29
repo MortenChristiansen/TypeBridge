@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace MappingGenerator.Test.TestMappingClasses
+namespace TypeBridge.Test.TestMappingClasses
 {
     abstract class Monster
     {

@@ -1,4 +1,4 @@
-﻿namespace MappingGenerator.Test.TestMappingClasses
+﻿namespace TypeBridge.Test.TestMappingClasses
 {
     class MonsterCamp<TMonster> where TMonster : Monster
     {

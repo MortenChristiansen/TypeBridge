@@ -1,7 +1,7 @@
 ﻿using Microsoft.CodeAnalysis;
 using System.Collections.Generic;
 
-namespace MappingGenerator.Generator
+namespace TypeBridge.Generator
 {
     static class SyntaxExtensions
     {

@@ -3,7 +3,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace MappingGenerator.Generator
+namespace TypeBridge.Generator
 {
     class SyntaxReceiver : ISyntaxReceiver
     {

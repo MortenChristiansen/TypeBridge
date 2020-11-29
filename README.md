@@ -1,4 +1,4 @@
-# Mapping Generator
+# Type Bridge
 
 A .NET source generator that allows you to map from one type to another with a similar signature
 in a strongly typed manner.

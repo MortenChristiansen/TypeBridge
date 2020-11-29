@@ -1,6 +1,6 @@
 ﻿using Microsoft.CodeAnalysis;
 
-namespace MappingGenerator.Generator
+namespace TypeBridge.Generator
 {
     class MappingInfo
     {

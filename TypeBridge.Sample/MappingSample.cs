@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MappingGenerator.Sample
+namespace TypeBridge.Sample
 {
     class MappingSample
     {
@@ -189,7 +189,7 @@ namespace MappingGenerator.Sample
     }
 }
 
-namespace MappingGenerator.Other
+namespace TypeBridge.Other
 {
     public class D
     {
