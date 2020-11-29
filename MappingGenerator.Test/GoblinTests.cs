@@ -19,6 +19,18 @@ namespace MappingGenerator.Test
         }
 
         [Fact]
+        public void You_can_map_goblin_by_extending_the_source_object()
+        {
+            Monster goblin = new Goblin(sneakyness: 10);
+
+            GoblinDto result = goblin.Map().Extend(new GoblinTraitsDto { Sneakyness = 4 });
+
+            Assert.Equal(goblin.Name, result.Name);
+            Assert.Equal(goblin.HitPoints, result.HitPoints);
+            Assert.Equal(4, result.Sneakyness);
+        }
+
+        [Fact]
         public void You_can_map_a_goblin_boss_as_a_goblin()
         {
             var goblin = new GoblinBoss(new[] { new Goblin(sneakyness: 10), new Goblin(sneakyness: 15) });
@@ -62,5 +74,16 @@ namespace MappingGenerator.Test
             Assert.Equal(result.Monsters.ElementAt(0).HitPoints, goblinCamp.Monsters[0].HitPoints);
             Assert.Equal(result.Monsters.ElementAt(0).Sneakyness, goblinCamp.Monsters[0].Sneakyness);
         }
+
+        //[Fact]
+        //public void You_can_map_a_goblin_to_food()
+        //{
+        //    var goblin1 = new Goblin(sneakyness: 10);
+        //    var goblin2 = new Goblin(sneakyness: 5);
+
+        //    goblin1.Eat(goblin2.Map());
+
+        //    Assert.False(goblin1.IsHungry);
+        //}
     }
 }
