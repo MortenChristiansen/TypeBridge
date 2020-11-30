@@ -1,7 +1,8 @@
 # Type Bridge
 
 A .NET source generator that allows you to map from one type to another with a similar signature
-in a strongly typed manner.
+in a strongly typed manner. An early version of the package is available from NuGet
+[here](https://www.nuget.org/packages/TypeBridge/).
 
 ## Roadmap
 
