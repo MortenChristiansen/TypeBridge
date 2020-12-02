@@ -198,11 +198,38 @@ $@"public static implicit operator {destinationType.ToDisplayString()}({mapperTy
             var sourceProperties = GetCombinedSourceProperties(sourceName, sourceType, extensions);
             var destinationProperties = GetPropertiesRecursively(destinationType);
 
+            var constructors = destinationType.GetMembers().OfType<IMethodSymbol>().Where(m => m.MethodKind == MethodKind.Constructor).ToList();
+            var match = constructors.Find(c => MethodMatchesArguments(c, destinationProperties));
+            if (match != null)
+            {
+                return
+$@"            new {destinationType.ToDisplayString()}({string.Join($", ", destinationProperties.Select(dp => $"{sourceProperties[dp.Name].Source}.{dp.Name}"))})";
+            }
+
             return
 $@"            new {destinationType.ToDisplayString()}()
             {{
                 {string.Join($",{Environment.NewLine}                ", destinationProperties.Select(dp => FormatPropertyMapping(sourceProperties[dp.Name], dp, nextListNameNumber, extensions)))}
             }}";
+        }
+
+        private static bool MethodMatchesArguments(IMethodSymbol c, List<IPropertySymbol> expectedArguments)
+        {
+            if (c.Parameters.Length == 0 || c.Parameters.Length != expectedArguments.Count)
+                return false;
+
+            //System.Diagnostics.Debugger.Launch();
+
+            var sortedParameters = c.Parameters.OrderBy(p => p.Name.ToLower()).ToList();
+            var sortedArguments = expectedArguments.OrderBy(p => p.Name.ToLower()).ToList();
+
+            for (int i = 0; i < sortedParameters.Count; i++)
+            {
+                if (sortedParameters[i].Type.GetHashCode() != sortedArguments[i].Type.GetHashCode() || !string.Equals(sortedParameters[i].Name, sortedArguments[i].Name, StringComparison.InvariantCultureIgnoreCase))
+                    return false;
+            }
+
+            return true;
         }
 
         private Dictionary<string, (ITypeSymbol Type, string Source)> GetCombinedSourceProperties(string sourceName, ITypeSymbol sourceType, ITypeSymbol[] extensions)

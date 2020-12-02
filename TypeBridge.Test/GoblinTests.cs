@@ -7,7 +7,7 @@ namespace TypeBridge.Test
     public class GoblinTests
     {
         [Fact]
-        public void You_can_map_a_goblin()
+        public void You_can_map_one_type_into_another()
         {
             var goblin = new Goblin(sneakyness: 10);
 
@@ -19,7 +19,7 @@ namespace TypeBridge.Test
         }
 
         [Fact]
-        public void You_can_map_goblin_by_extending_the_source_object()
+        public void You_can_map_multiple_source_objects_to_a_single_destination_object()
         {
             Monster goblin = new Goblin(sneakyness: 10);
 
@@ -31,7 +31,7 @@ namespace TypeBridge.Test
         }
 
         [Fact]
-        public void You_can_map_a_goblin_boss_as_a_goblin()
+        public void You_can_map_an_object_to_one_of_its_sub_types()
         {
             var goblin = new GoblinBoss(new[] { new Goblin(sneakyness: 10), new Goblin(sneakyness: 15) });
 
@@ -43,7 +43,7 @@ namespace TypeBridge.Test
         }
 
         [Fact]
-        public void You_can_map_a_goblin_boss_as_a_boss()
+        public void You_can_map_objects_with_collection_properties()
         {
             var goblin = new GoblinBoss(new[] { new Goblin(sneakyness: 10), new Goblin(sneakyness: 15) });
 
@@ -62,7 +62,7 @@ namespace TypeBridge.Test
         }
 
         [Fact]
-        public void You_can_map_a_goblin_camp()
+        public void You_can_map_to_generic_types()
         {
             var goblin = new Goblin(sneakyness: 10);
             var goblinCamp = new MonsterCamp<Goblin>(goblin);
@@ -75,15 +75,15 @@ namespace TypeBridge.Test
             Assert.Equal(result.Monsters.ElementAt(0).Sneakyness, goblinCamp.Monsters[0].Sneakyness);
         }
 
-        //[Fact]
-        //public void You_can_map_a_goblin_to_food()
-        //{
-        //    var goblin1 = new Goblin(sneakyness: 10);
-        //    var goblin2 = new Goblin(sneakyness: 5);
+        [Fact]
+        public void You_can_map_to_a_destination_type_having_a_constructor_if_the_constructor_accepts_all_the_properties()
+        {
+            Monster goblin = new Goblin(sneakyness: 10);
 
-        //    goblin1.Eat(goblin2.Map());
+            GenericMonster monster = goblin.Map();
 
-        //    Assert.False(goblin1.IsHungry);
-        //}
+            Assert.Equal(goblin.Name, monster.Name);
+            Assert.Equal(goblin.HitPoints, monster.HitPoints);
+        }
     }
 }

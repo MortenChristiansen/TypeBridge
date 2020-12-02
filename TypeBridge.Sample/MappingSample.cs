@@ -61,10 +61,13 @@ namespace TypeBridge.Sample
             //C c9 = g9.Map();
 
             // Extension
-            var h10 = new H();
-            var k10 = new K();
-            A a10 = h10.Map().Extend(Fun());
+            //var h10 = new H();
+            //var k10 = new K();
+            //A a10 = h10.Map().Extend(Fun());
             //J j10 = h10.Map();
+
+            // TODO: Support destination type constructors with arguments
+            // TODO: Support mapping property names?
         }
 
         private K Fun() =>
