@@ -31,10 +31,10 @@ which I have currently identified as reasonable for the library to have.
 - [x] Support mapping from a type with more fields than the recipient
 - [x] Extending the source type with other types, merging the properties into the resulting output
 - [x] Prevent error on recursion
+- [x] Handle destination types without a public default constructor
 
 ### Version 1.1
 
-- [ ] Handle destination types without a public default constructor
 - [ ] Map collections
 - [ ] Map properties where source type has implicit conversion to destination type
 - [ ] Map properties where source type has explicit conversion to destination type
