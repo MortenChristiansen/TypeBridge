@@ -32,10 +32,12 @@ which I have currently identified as reasonable for the library to have.
 - [x] Extending the source type with other types, merging the properties into the resulting output
 - [x] Prevent error on recursion
 - [x] Handle destination types without a public default constructor
-
-### Version 1.1
-
+- [x] Map to normal method return type
 - [ ] Map collections
+
+### Future version
+
+- [ ] Method invocation mapping `obj1.Method.MapInvoke(obj2);`
 - [ ] Map properties where source type has implicit conversion to destination type
 - [ ] Map properties where source type has explicit conversion to destination type
 - [ ] Support mapping to and from records

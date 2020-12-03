@@ -70,6 +70,20 @@ namespace TypeBridge
                 PropertyAssignments.Add((source, argument, ReceivedSyntaxType.MethodArgument));
                 return;
             }
+
+            // Match B Func(A a) => a.Map();
+            if (syntaxNode.Parent is ArrowExpressionClauseSyntax { Parent: MethodDeclarationSyntax { ReturnType: IdentifierNameSyntax { } arrowMethodReturnType } })
+            {
+                PropertyAssignments.Add((source, arrowMethodReturnType, ReceivedSyntaxType.Default));
+                return;
+            }
+
+            // Match B Func(A a) { return a.Map(); }
+            if (syntaxNode.Parent is ReturnStatementSyntax { Parent: BlockSyntax { Parent: MethodDeclarationSyntax { ReturnType: IdentifierNameSyntax { } methodReturnType } } })
+            {
+                PropertyAssignments.Add((source, methodReturnType, ReceivedSyntaxType.Default));
+                return;
+            }
         }
 
         private SyntaxNode GetMapSourceNode(SyntaxNode syntaxNode)
