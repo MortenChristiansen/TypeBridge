@@ -70,7 +70,7 @@ namespace TypeBridge
                         continue;
                 }
 
-                // Normal method
+                // Variable method
                 if (type == ReceivedSyntaxType.MethodArgument && destination is ArgumentSyntax
                     {
                         Parent: ArgumentListSyntax
@@ -90,6 +90,37 @@ namespace TypeBridge
                     destinationType = parameter.Type;
                     if (destinationType is null || foundTypes.Contains((sourceType, destinationType)))
                         continue;
+                }
+
+                // Current object's method
+                if (type == ReceivedSyntaxType.MethodArgument && destination is ArgumentSyntax
+                    {
+                        Parent: ArgumentListSyntax
+                        {
+                            Parent: InvocationExpressionSyntax
+                            {
+                                Expression: IdentifierNameSyntax methodName2
+                            },
+                            Arguments: {} instanceMethodArguments
+                        }
+                    } instanceMethodArgument)
+                {
+
+                    var instanceMethodInfo = semanticModel.GetSymbolInfo(methodName2);
+                    // Can we be more robust about this?
+                    var candidate = instanceMethodInfo.CandidateSymbols.OfType<IMethodSymbol>().FirstOrDefault(c => c.Name == methodName2.Identifier.ValueText && c.Parameters.Length == instanceMethodArguments.Count);
+                    if (candidate != null)
+                    {
+                        //System.Diagnostics.Debugger.Launch();
+                        var parameter = GetParameter(candidate, instanceMethodArguments, null, instanceMethodArgument);
+                        if (parameter == null)
+                            continue;
+
+                        destinationType = parameter.Type;
+                        if (destinationType is null || foundTypes.Contains((sourceType, destinationType)))
+                            continue;
+                    }
+
                 }
 
                 // Constructor method
@@ -210,6 +241,18 @@ namespace TypeBridge
                 .Select(m => (Match: HasMatchingParameters(m, arguments, argument, genericArguments, out var matchingParameter), matchingParameter))
                 .FirstOrDefault(v => v.Match)
                 .matchingParameter;
+
+        private IParameterSymbol GetParameter(
+            IMethodSymbol method,
+            SeparatedSyntaxList<ArgumentSyntax> arguments,
+            TypeArgumentListSyntax genericArguments,
+            ArgumentSyntax argument
+        )
+        {
+            if (HasMatchingParameters(method, arguments, argument, genericArguments, out var matchingParameter))
+                return matchingParameter;
+            return null;
+        }
 
         private IParameterSymbol GetConstructorParameter(
             SemanticModel semanticModel,

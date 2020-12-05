@@ -33,7 +33,7 @@ which I have currently identified as reasonable for the library to have.
 - [x] Prevent error on recursion
 - [x] Handle destination types without a public default constructor
 - [x] Map to normal method return type
-- [ ] Map collections
+- [x] Map collections
 
 ### Future version
 

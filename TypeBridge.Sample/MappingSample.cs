@@ -34,7 +34,7 @@ namespace TypeBridge.Sample
             //var b4 = new B();
             //b4.DoStuff<A>(b2.Map());
             //b4.DoThing(b2.Map());
-            
+
             //// Object initializers
             //var d5 = new Other.D
             //{
@@ -68,10 +68,15 @@ namespace TypeBridge.Sample
 
             // TODO: Support destination type constructors with arguments
             // TODO: Support mapping property names?
+
+            var aList = new List<A>();
+            Fun(aList.Map());
         }
 
-        private K Fun() =>
-            default;
+        private J Fun(List<B> blist)
+        {
+            return default;
+        }
     }
 
     public class H
