@@ -70,7 +70,8 @@ namespace TypeBridge.Sample
             // TODO: Support mapping property names?
 
             var aList = new List<A>();
-            Fun(aList.Map());
+            B[] bArray = aList.Map();
+            //List<B> bList = aList.Map();
         }
 
         private J Fun(List<B> blist)

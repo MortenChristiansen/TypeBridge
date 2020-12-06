@@ -38,6 +38,7 @@ which I have currently identified as reasonable for the library to have.
 ### Future version
 
 - [ ] Method invocation mapping `obj1.Method.MapInvoke(obj2);`
+- [ ] Property assignment on existing object `obj1.Map(obj2);`
 - [ ] Map properties where source type has implicit conversion to destination type
 - [ ] Map properties where source type has explicit conversion to destination type
 - [ ] Support mapping to and from records

@@ -58,7 +58,7 @@ namespace TypeBridge
             if (IsAssignable(sourceType, destinationType))
                 return true;
 
-            // Also suppor any combination of IEnumerable and List
+            // Also support any combination of IEnumerable and List
             if (TryGetCollectionType(sourceType, out var sourceElementType, out var _) && TryGetCollectionType(destinationType, out var destinationElementType, out var _))
             {
                 if (IsMappable(sourceElementType, destinationElementType, extensionTypes, level + 1))

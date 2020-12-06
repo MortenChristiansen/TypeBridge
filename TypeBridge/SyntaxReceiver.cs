@@ -49,7 +49,7 @@ namespace TypeBridge
             }
 
             // Match "B b = X"
-            if (syntaxNode.Parent is EqualsValueClauseSyntax { Parent: VariableDeclaratorSyntax { Parent: VariableDeclarationSyntax { Type: IdentifierNameSyntax { } type } } })
+            if (syntaxNode.Parent is EqualsValueClauseSyntax { Parent: VariableDeclaratorSyntax { Parent: VariableDeclarationSyntax { Type: { } type } } })
             {
                 PropertyAssignments.Add((source, type, ReceivedSyntaxType.Default));
                 return;
