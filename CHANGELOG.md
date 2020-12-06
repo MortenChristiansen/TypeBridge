@@ -10,6 +10,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Improved ability to resolve destination types for Map method.
 - Support for mapping to properties of type `IReadOnlyList` and `IReadOnlyCollection`.
 
+### Fixed
+- Naming collision for multiple mappings to the same generic type.
+
 ## [0.3.0] - 2020-12-05
 
 ### Added

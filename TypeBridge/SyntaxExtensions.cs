@@ -22,5 +22,17 @@ namespace TypeBridge
 
         public static string Decapitalize(this string s) =>
             s.Length == 0 ? "" : s.Length == 1 ? s.ToLower() : s.Substring(0, 1).ToLower() + s.Substring(1);
+
+        public static string GetUngenericizedQualifiedName(this ITypeSymbol type) =>
+            type.ToDisplayString().Replace("<", "_").Replace(">", "_");
+
+        public static string GetUngenericizedName(this ITypeSymbol type)
+        {
+            var name = type.ToDisplayString();
+            if (!name.Contains("<"))
+                return name;
+
+            return name.Replace("<", "_").Replace(">", "_").Replace(".", "_");
+        }
     }
 }

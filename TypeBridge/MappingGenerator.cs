@@ -34,7 +34,7 @@ namespace TypeBridge
                     var mapper = formatter.Format();
                     var extensionClass = MapExtensionFormatter.Format(m.Key);
                     var combined = NamespaceFormatter.Format(m.Key.GetNamespace(), mapper) + Environment.NewLine + Environment.NewLine + extensionClass;
-                    context.AddSource($"{m.Key.Name}_Mapper.cs", combined);
+                    context.AddSource($"{m.Key.GetUngenericizedQualifiedName()}_Mapper.cs", combined);
                     //System.Diagnostics.Debugger.Launch();
                 }
             }

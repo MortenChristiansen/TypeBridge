@@ -114,18 +114,18 @@ namespace TypeBridge
         }
 
         public string Format() =>
-$@"sealed class {_sourceType.Name}_Mapper
+$@"sealed class {_sourceType.GetUngenericizedName()}_Mapper
     {{
         private readonly {_sourceType.ToDisplayString()} _source;
 
-        public {_sourceType.Name}_Mapper({_sourceType.ToDisplayString()} source)
+        public {_sourceType.GetUngenericizedName()}_Mapper({_sourceType.ToDisplayString()} source)
         {{
             _source = source;
         }}
 
         {FormatExtendMethods()}
 
-        {string.Join(Environment.NewLine, _destinationTypes.Where(d => IsMappable(_sourceType, d, new ITypeSymbol[0])).Select(d => FormatImplicitOperator($"{_sourceType.Name}_Mapper m", _sourceType, d, new ITypeSymbol[0])))}
+        {string.Join(Environment.NewLine, _destinationTypes.Where(d => IsMappable(_sourceType, d, new ITypeSymbol[0])).Select(d => FormatImplicitOperator($"{_sourceType.GetUngenericizedName()}_Mapper m", _sourceType, d, new ITypeSymbol[0])))}
 
 {string.Join(Environment.NewLine + Environment.NewLine, _extensionTypes.Select((e, i) => FormatExensionMapper(i+1, e.Extensions)))}
     }}";
@@ -146,19 +146,19 @@ $@"sealed class {_sourceType.Name}_Mapper
             if (_extensionTypes.Count == 0)
                 return
 $@"{methodComment}
-        public {_sourceType.Name}_Mapper Extend(object value) =>
+        public {_sourceType.GetUngenericizedName()}_Mapper Extend(object value) =>
             this;
 ";
 
             return string.Join(Environment.NewLine + Environment.NewLine, _extensionTypes.Select((t, i) =>
 $@"       {methodComment}
-        public {_sourceType.Name}_Mapper.Extension{i+1} Extend({string.Join(", ", t.Extensions.Select((v, i2) => $"{v.GetQualifiedName()} v{i2+1}"))}) =>
-            new {_sourceType.Name}_Mapper.Extension{i + 1}(_source, {string.Join(", ", t.Extensions.Select((_, i2) => $"v{i2 + 1}"))});
+        public {_sourceType.GetUngenericizedName()}_Mapper.Extension{i+1} Extend({string.Join(", ", t.Extensions.Select((v, i2) => $"{v.GetQualifiedName()} v{i2+1}"))}) =>
+            new {_sourceType.GetUngenericizedName()}_Mapper.Extension{i + 1}(_source, {string.Join(", ", t.Extensions.Select((_, i2) => $"v{i2 + 1}"))});
 "));
         }
 
         private string FormatImplicitOperator(string mapperTypeName, ITypeSymbol sourceType, ITypeSymbol destinationType, ITypeSymbol[] extensions) =>
-$@"public static implicit operator {destinationType.ToDisplayString()}({mapperTypeName}) =>
+$@"public static implicit operator {destinationType.GetUngenericizedQualifiedName()}({mapperTypeName}) =>
 {FormatMapping("m._source", sourceType, destinationType, 1, extensions)};";
 
         private List<IPropertySymbol> GetPropertiesRecursively(ITypeSymbol type)
@@ -266,7 +266,7 @@ $@"public sealed class Extension{extensionNumber}
 {string.Join($"{Environment.NewLine}", extensionTypes.Select((e, i) => $"           _extensionSource{i + 1} = ext{i + 1};"))}
         }}
 
-        {string.Join(Environment.NewLine, _destinationTypes.Select(d => FormatImplicitOperator($"{_sourceType.Name}_Mapper.Extension{extensionNumber} m", _sourceType, d, extensionTypes)))}
+        {string.Join(Environment.NewLine, _destinationTypes.Select(d => FormatImplicitOperator($"{_sourceType.GetUngenericizedName()}_Mapper.Extension{extensionNumber} m", _sourceType, d, extensionTypes)))}
     }}";
     }
 }
