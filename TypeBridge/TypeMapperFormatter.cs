@@ -77,7 +77,7 @@ namespace TypeBridge
 
         private bool TryGetCollectionType(ITypeSymbol type, out ITypeSymbol elementType, out string postfix)
         {
-            var names = new[] { "List", "IEnumerable" };
+            var names = new[] { "List", "IEnumerable", "IReadOnlyList", "IReadOnlyCollection" };
 
             if (names.Contains(type.Name) && type is INamedTypeSymbol list && list.TypeArguments.Length == 1)
             {
