@@ -56,14 +56,6 @@ namespace TypeBridge
 
             }
 
-            // Match "B<T> b = X"
-            if (syntaxNode.Parent is EqualsValueClauseSyntax { Parent: VariableDeclaratorSyntax { Parent: VariableDeclarationSyntax { Type: GenericNameSyntax { } genericType } } })
-            {
-                PropertyAssignments.Add((source, genericType, ReceivedSyntaxType.Default));
-                return;
-
-            }
-
             // Match "a.SomeMethod(X)"
             if (syntaxNode.Parent is ArgumentSyntax { } argument)
             {
@@ -72,14 +64,14 @@ namespace TypeBridge
             }
 
             // Match B Func(A a) => a.Map();
-            if (syntaxNode.Parent is ArrowExpressionClauseSyntax { Parent: MethodDeclarationSyntax { ReturnType: IdentifierNameSyntax { } arrowMethodReturnType } })
+            if (syntaxNode.Parent is ArrowExpressionClauseSyntax { Parent: MethodDeclarationSyntax { ReturnType: { } arrowMethodReturnType } })
             {
                 PropertyAssignments.Add((source, arrowMethodReturnType, ReceivedSyntaxType.Default));
                 return;
             }
 
             // Match B Func(A a) { return a.Map(); }
-            if (syntaxNode.Parent is ReturnStatementSyntax { Parent: BlockSyntax { Parent: MethodDeclarationSyntax { ReturnType: IdentifierNameSyntax { } methodReturnType } } })
+            if (syntaxNode.Parent is ReturnStatementSyntax { Parent: BlockSyntax { Parent: MethodDeclarationSyntax { ReturnType: { } methodReturnType } } })
             {
                 PropertyAssignments.Add((source, methodReturnType, ReceivedSyntaxType.Default));
                 return;
